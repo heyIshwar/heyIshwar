@@ -18,6 +18,15 @@ const SITE = {
   youtube: "@ishwarsarade",
 };
 
+// Crowdfunding homies — from ishwar.dev footer
+const SPONSORS = [
+  { name: "Dhananjay", url: "https://www.instagram.com/__28dhananjay/" },
+  { name: "Furqan", url: "https://www.instagram.com/furqan_ashaie/" },
+  { name: "Stalin", url: "https://www.instagram.com/stalin___07/" },
+  { name: "Tejas", url: "https://www.instagram.com/tejas.ikhe/" },
+  { name: "Dishant", url: "https://www.linkedin.com/in/dishant-manhas-8b545b18b/" },
+];
+
 const WORK = [
   {
     who: "Independent",

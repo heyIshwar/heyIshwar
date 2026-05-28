@@ -247,7 +247,7 @@ function VariationIDE() {
         minHeight: "100%",
         display: "grid",
         gridTemplateColumns: "260px 1fr",
-        gridTemplateRows: "40px 1fr 28px",
+        gridTemplateRows: "40px 1fr auto",
         height: "100%",
       }}
     >
@@ -419,23 +419,59 @@ function VariationIDE() {
         style={{
           gridColumn: "1 / -1",
           borderTop: "1px solid var(--border)",
-          padding: "0 16px",
+          padding: "6px 16px 8px",
           fontFamily: "var(--mono)",
           fontSize: 10,
           color: "var(--muted)",
           display: "flex",
+          flexWrap: "wrap",
           alignItems: "center",
           justifyContent: "space-between",
+          gap: "6px 16px",
           letterSpacing: 0.5,
         }}
       >
-        <div style={{ display: "flex", gap: 14 }}>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           <span style={{ color: "var(--accent)" }}>● ready</span>
           <span>utf-8</span>
           <span>LF</span>
           <span>{active}</span>
         </div>
-        <div style={{ display: "flex", gap: 14 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "4px 6px",
+            flex: "1 1 280px",
+            justifyContent: "center",
+            lineHeight: 1.5,
+          }}
+        >
+          <span style={{ color: "var(--fg-dim)" }}>
+            homies answered crowdfunding ❤ thanks
+          </span>
+          {SPONSORS.map((s, i) => (
+            <React.Fragment key={s.name}>
+              {i > 0 && <span style={{ color: "var(--border)" }}>·</span>}
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: "var(--fg-dim)", textDecoration: "none" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--accent)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "var(--fg-dim)";
+                }}
+              >
+                {s.name}
+              </a>
+            </React.Fragment>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           <span>press ⌘K to jump</span>
           <span>spaces: 2</span>
         </div>
