@@ -1,3 +1,3 @@
 # Ishwar
 
-IDE-style portfolio — **[heyishwar.github.io/heyIshwar](https://heyishwar.github.io/heyIshwar/)**
+IDE-style portfolio — **[heyishwar.github.io](https://heyishwar.github.io/)**
