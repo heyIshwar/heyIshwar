@@ -555,7 +555,7 @@ function VariationIDE() {
   }, []);
 
   React.useEffect(() => {
-    document.title = `${SITE.domain} — ${active}`;
+    updatePageSeo(active);
   }, [active]);
 
   React.useEffect(() => {
@@ -640,7 +640,7 @@ function VariationIDE() {
         <Explorer active={active} onSelect={navigate} onClose={() => setSidebarOpen(false)} />
       </div>
 
-      <div className="ide-main">
+      <div className="ide-main" role="main" aria-live="polite">
         <IDEContent active={active} onNav={navigate} />
       </div>
 

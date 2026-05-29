@@ -21,6 +21,15 @@ const SITE = {
   github: "heyIshwar",
   instagram: "hey_ishwar",
   youtube: "@ishwarsarade",
+  primaryOrigin: "https://ishwar.dev",
+  seo: {
+    defaultTitle: "Ishwar Sarade — Full-Stack & AI Engineer",
+    defaultDescription:
+      "Portfolio of Ishwar Sarade — product-focused full-stack & AI engineer building web apps, RAG pipelines, MCP tooling, and open source. Based in Mumbai. Open to work.",
+    keywords:
+      "Ishwar Sarade, full stack engineer, AI engineer, React, Node.js, TypeScript, MCP, RAG, Mumbai, open to work",
+    locale: "en_IN",
+  },
 };
 
 // Crowdfunding homies — from ishwar.dev footer
@@ -305,4 +314,135 @@ function Divider() {
   return <div style={{ height: 1, background: "var(--border)", width: "100%" }} />;
 }
 
-Object.assign(window, { SITE, WORK, PROJECTS, POSTS, NOW, RESUME, SPONSORS, Tag, Dot, Divider });
+function getSiteOrigin() {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin.replace(/\/$/, "");
+  }
+  return SITE.primaryOrigin;
+}
+
+function absoluteAsset(path) {
+  return `${SITE.primaryOrigin}/${path.replace(/^\//, "")}`;
+}
+
+function routeToPublicUrl(route) {
+  const id = route.split("/").map(encodeURIComponent).join("/");
+  return `${getSiteOrigin()}/#/${id}`;
+}
+
+function getRouteSeo(route) {
+  const post = POSTS.find((p) => `blog/${p.file}` === route);
+  if (post) {
+    return {
+      title: `${post.title} — ${SITE.name}`,
+      description: `${post.sub}. Essay by Ishwar Sarade on ${SITE.domain}.`,
+    };
+  }
+
+  const routes = {
+    "readme.md": {
+      title: SITE.seo.defaultTitle,
+      description: SITE.seo.defaultDescription,
+    },
+    "now.md": {
+      title: `Now — ${SITE.name}`,
+      description: `What Ishwar Sarade is focused on right now — ${NOW.join(" ")}`.slice(0, 160),
+    },
+    "work.yaml": {
+      title: `Work — ${SITE.name}`,
+      description:
+        "Experience and roles — full-stack & AI engineering, enterprise platforms, open source.",
+    },
+    "resume.md": {
+      title: `Resume — ${RESUME.fullName}`,
+      description: `${RESUME.headline}. ${RESUME.summary}`.slice(0, 160),
+    },
+    "projects/": {
+      title: `Projects — ${SITE.name}`,
+      description:
+        "Open-source projects by Ishwar Sarade — VX Engine, MCP utilities, React experiments, and more.",
+    },
+    "github/": {
+      title: `GitHub — ${SITE.github}`,
+      description: `Repositories and open-source work by ${SITE.github} on GitHub.`,
+    },
+    "blog/": {
+      title: `Blog — ${SITE.name}`,
+      description:
+        "Essays on agentic living, Node backends, MCP, terminal setup, and software engineering.",
+    },
+    contact: {
+      title: `Contact — ${SITE.name}`,
+      description: `Get in touch with Ishwar Sarade — ${SITE.email}. Full-stack & AI engineering.`,
+    },
+  };
+
+  return (
+    routes[route] || {
+      title: SITE.seo.defaultTitle,
+      description: SITE.seo.defaultDescription,
+    }
+  );
+}
+
+function setMeta(attr, key, content) {
+  if (typeof document === "undefined") return;
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
+
+function setLinkRel(rel, href) {
+  if (typeof document === "undefined") return;
+  let el = document.head.querySelector(`link[rel="${rel}"]`);
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", rel);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("href", href);
+}
+
+function updatePageSeo(route) {
+  const seo = getRouteSeo(route);
+  const pageUrl = routeToPublicUrl(route);
+  const image = absoluteAsset(SITE.headshot);
+
+  document.title = `${SITE.domain} — ${route}`;
+  setMeta("name", "description", seo.description);
+  setMeta("name", "robots", "index, follow, max-image-preview:large");
+  setMeta("property", "og:type", route.startsWith("blog/") ? "article" : "website");
+  setMeta("property", "og:site_name", SITE.domain);
+  setMeta("property", "og:title", seo.title);
+  setMeta("property", "og:description", seo.description);
+  setMeta("property", "og:url", pageUrl);
+  setMeta("property", "og:image", image);
+  setMeta("property", "og:locale", SITE.seo.locale);
+  setMeta("name", "twitter:card", "summary_large_image");
+  setMeta("name", "twitter:site", SITE.x);
+  setMeta("name", "twitter:creator", SITE.x);
+  setMeta("name", "twitter:title", seo.title);
+  setMeta("name", "twitter:description", seo.description);
+  setMeta("name", "twitter:image", image);
+  setLinkRel("canonical", pageUrl);
+}
+
+Object.assign(window, {
+  SITE,
+  WORK,
+  PROJECTS,
+  POSTS,
+  NOW,
+  RESUME,
+  SPONSORS,
+  Tag,
+  Dot,
+  Divider,
+  getSiteOrigin,
+  getRouteSeo,
+  updatePageSeo,
+});
