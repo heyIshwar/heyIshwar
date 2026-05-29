@@ -169,7 +169,7 @@ function ExplorerRow({ depth, active, onSelect, node, open, onToggle }) {
   );
 }
 
-function Explorer({ active, onSelect }) {
+function Explorer({ active, onSelect, onClose }) {
   const [openFolders, setOpenFolders] = React.useState({ blog: true, root: true });
 
   React.useEffect(() => {
@@ -207,14 +207,28 @@ function Explorer({ active, onSelect }) {
       <div
         style={{
           padding: "0 16px 10px",
-          fontFamily: "var(--mono)",
-          fontSize: 10,
-          color: "var(--muted)",
-          letterSpacing: 0.8,
-          textTransform: "uppercase",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 8,
         }}
       >
-        Explorer
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: 10,
+            color: "var(--muted)",
+            letterSpacing: 0.8,
+            textTransform: "uppercase",
+          }}
+        >
+          Explorer
+        </div>
+        {onClose && (
+          <button type="button" className="show-sm ide-menu-btn" onClick={onClose}>
+            ✕
+          </button>
+        )}
       </div>
       <ExplorerRow
         depth={0}
@@ -336,6 +350,7 @@ function CmdK({ open, onClose, onNav }) {
   if (!open) return null;
   return (
     <div
+      className="cmdk-overlay"
       onClick={onClose}
       style={{
         position: "fixed",
@@ -350,9 +365,9 @@ function CmdK({ open, onClose, onNav }) {
       }}
     >
       <div
+        className="cmdk-panel"
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 560,
           background: "#0d0d0d",
           border: "1px solid var(--border)",
           borderRadius: 6,
@@ -483,58 +498,62 @@ function CmdK({ open, onClose, onNav }) {
 function VariationIDE() {
   const [active, setActive] = React.useState("readme.md");
   const [palette, setPalette] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  function navigate(id) {
+    setActive(id);
+    setSidebarOpen(false);
+  }
 
   React.useEffect(() => {
     function onKey(e) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setPalette((p) => !p);
-      } else if (e.key === "Escape") setPalette(false);
+      } else if (e.key === "Escape") {
+        setPalette(false);
+        setSidebarOpen(false);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  return (
-    <div
-      style={{
-        background: "var(--bg)",
-        color: "var(--fg)",
-        fontFamily: "var(--sans)",
-        minHeight: "100%",
-        display: "grid",
-        gridTemplateColumns: "260px 1fr",
-        gridTemplateRows: "40px 1fr auto",
-        height: "100%",
-      }}
-    >
-      <CmdK open={palette} onClose={() => setPalette(false)} onNav={setActive} />
+  React.useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
 
-      <div
-        style={{
-          gridColumn: "1 / -1",
-          borderBottom: "1px solid var(--border)",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 16px",
-          fontFamily: "var(--mono)",
-          fontSize: 11,
-          color: "var(--muted)",
-          letterSpacing: 0.5,
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <div style={{ display: "flex", gap: 6 }}>
+  return (
+    <div className="ide-shell">
+      <CmdK open={palette} onClose={() => setPalette(false)} onNav={navigate} />
+
+      <div className="ide-topbar">
+        <div className="ide-topbar-left">
+          <button
+            type="button"
+            className="ide-menu-btn"
+            aria-label="Open explorer"
+            onClick={() => setSidebarOpen(true)}
+          >
+            ☰ files
+          </button>
+          <div className="hide-sm" style={{ display: "flex", gap: 6 }}>
             <span style={{ width: 10, height: 10, borderRadius: 999, background: "#2a2a2a" }} />
             <span style={{ width: 10, height: 10, borderRadius: 999, background: "#2a2a2a" }} />
             <span style={{ width: 10, height: 10, borderRadius: 999, background: "#2a2a2a" }} />
           </div>
-          <span>~/{SITE.domain}</span>
-          <span style={{ color: "var(--accent)" }}>· main</span>
+          <span className="ide-topbar-path">~/{SITE.domain}</span>
+          <span className="hide-sm" style={{ color: "var(--accent)" }}>
+            · main
+          </span>
         </div>
-        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+        <div className="ide-topbar-right">
           <button
+            type="button"
+            className="ide-palette-btn"
             onClick={() => setPalette(true)}
             style={{
               background: "transparent",
@@ -548,59 +567,41 @@ function VariationIDE() {
               cursor: "pointer",
             }}
           >
-            ⌘K palette
+            <span className="hide-sm">⌘K palette</span>
+            <span className="show-sm">⌘K</span>
           </button>
-          <span>·</span>
-          <span style={{ color: "var(--accent)" }}>
-            <Dot /> online
+          <span className="hide-sm">·</span>
+          <span style={{ color: "var(--accent)", whiteSpace: "nowrap" }}>
+            <Dot /> <span className="hide-sm">online</span>
           </span>
         </div>
-      </div>
-
-      <div style={{ borderRight: "1px solid var(--border)", overflow: "auto" }}>
-        <Explorer active={active} onSelect={setActive} />
-      </div>
-
-      <div style={{ overflow: "auto", padding: "40px 56px 80px" }}>
-        <IDEContent active={active} onNav={setActive} />
       </div>
 
       <div
-        style={{
-          gridColumn: "1 / -1",
-          borderTop: "1px solid var(--border)",
-          padding: "6px 16px 8px",
-          fontFamily: "var(--mono)",
-          fontSize: 10,
-          color: "var(--muted)",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "6px 16px",
-          letterSpacing: 0.5,
-        }}
-      >
+        className={`ide-backdrop${sidebarOpen ? " open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden={!sidebarOpen}
+      />
+
+      <div className={`ide-sidebar${sidebarOpen ? " open" : ""}`}>
+        <Explorer active={active} onSelect={navigate} onClose={() => setSidebarOpen(false)} />
+      </div>
+
+      <div className="ide-main">
+        <IDEContent active={active} onNav={navigate} />
+      </div>
+
+      <div className="ide-footer">
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           <span style={{ color: "var(--accent)" }}>● ready</span>
-          <span>utf-8</span>
-          <span>LF</span>
-          <span>{active}</span>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "4px 6px",
-            flex: "1 1 280px",
-            justifyContent: "center",
-            lineHeight: 1.5,
-          }}
-        >
-          <span style={{ color: "var(--fg-dim)" }}>
-            homies answered crowdfunding ❤ thanks
+          <span className="hide-sm">utf-8</span>
+          <span className="hide-sm">LF</span>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: "42vw" }}>
+            {active}
           </span>
+        </div>
+        <div className="ide-footer-sponsors">
+          <span style={{ color: "var(--fg-dim)" }}>homies answered crowdfunding ❤ thanks</span>
           {SPONSORS.map((s, i) => (
             <React.Fragment key={s.name}>
               {i > 0 && <span style={{ color: "var(--border)" }}>·</span>}
@@ -609,19 +610,13 @@ function VariationIDE() {
                 target="_blank"
                 rel="noreferrer"
                 style={{ color: "var(--fg-dim)", textDecoration: "none" }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--accent)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--fg-dim)";
-                }}
               >
                 {s.name}
               </a>
             </React.Fragment>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+        <div className="hide-sm" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
           <span>press ⌘K to jump</span>
           <span>spaces: 2</span>
         </div>
@@ -720,18 +715,6 @@ function ReadmeDoc({ onNav }) {
   const featured = PROJECTS.filter((p) => p.featured);
   const currentFocus = NOW[0];
 
-  const wireRow = {
-    display: "grid",
-    gridTemplateColumns: "84px 1fr auto",
-    gap: 16,
-    padding: "12px 16px",
-    fontFamily: "var(--mono)",
-    fontSize: 12.5,
-    alignItems: "center",
-    color: "var(--fg-dim)",
-    textDecoration: "none",
-    cursor: "pointer",
-  };
   const wireKind = {
     color: "var(--accent)",
     letterSpacing: 0.5,
@@ -799,7 +782,7 @@ function ReadmeDoc({ onNav }) {
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 30 }}>
+      <div className="readme-hero-row" style={{ marginBottom: 30 }}>
         <img
           src={SITE.headshot}
           alt={SITE.name}
@@ -839,15 +822,7 @@ function ReadmeDoc({ onNav }) {
         </div>
       </div>
 
-      <h1
-        style={{
-          fontSize: 56,
-          fontWeight: 400,
-          letterSpacing: -1.2,
-          margin: 0,
-          lineHeight: 1.05,
-        }}
-      >
+      <h1 className="doc-hero">
         Web, AI,<br />
         and things that ship.
       </h1>
@@ -925,14 +900,7 @@ dx:     `}
 # Ishwar was here.`}
       </pre>
 
-      <div
-        style={{
-          marginTop: 36,
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 12,
-        }}
-      >
+      <div className="readme-kv-grid">
         {[
           { k: "stack", v: "node · react · ts · mongodb" },
           { k: "status", v: "open to work" },
@@ -971,7 +939,7 @@ dx:     `}
           ↳ on the wire
         </div>
         <div style={{ border: "1px solid var(--border)", borderRadius: 4, overflow: "hidden" }}>
-          <a href={latestPost.url} target="_blank" rel="noreferrer" className="readme-card" style={wireRow}>
+          <a href={latestPost.url} target="_blank" rel="noreferrer" className="wire-row readme-card">
             <span style={wireKind}>
               <Dot /> essay
             </span>
@@ -986,8 +954,7 @@ dx:     `}
             href={featured[0].url}
             target="_blank"
             rel="noreferrer"
-            className="readme-card"
-            style={wireRow}
+            className="wire-row readme-card"
           >
             <span style={wireKind}>
               <Dot /> shipped
@@ -999,7 +966,7 @@ dx:     `}
             <span style={wireMeta}>github →</span>
           </a>
           <div style={{ borderTop: "1px solid var(--border)" }} />
-          <div onClick={() => onNav && onNav("now.md")} className="readme-card" style={wireRow}>
+          <div onClick={() => onNav && onNav("now.md")} className="wire-row readme-card">
             <span style={wireKind}>
               <Dot /> now
             </span>
@@ -1107,7 +1074,7 @@ function NowDoc() {
   return (
     <div style={{ maxWidth: 720 }}>
       {docHeader("# now.md")}
-      <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>
+      <h2 className="doc-h2">
         What I&rsquo;m on this week
       </h2>
       <div style={{ marginTop: 8, fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
@@ -1203,7 +1170,7 @@ function ResumeDoc() {
       {docHeader("# resume.md")}
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "baseline" }}>
-        <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>
+        <h2 className="doc-h2">
           {RESUME.fullName}
         </h2>
         <Tag accent>{RESUME.version}</Tag>
@@ -1341,7 +1308,7 @@ function ProjectsDoc() {
   return (
     <div style={{ maxWidth: 820 }}>
       {docHeader("# projects/")}
-      <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>
+      <h2 className="doc-h2">
         Side of the desk
       </h2>
       <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", marginTop: 8 }}>
@@ -1432,7 +1399,7 @@ function GitHubDoc() {
   return (
     <div style={{ maxWidth: 960 }}>
       {docHeader("# github/  —  " + repos.length + " repos")}
-      <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>
+      <h2 className="doc-h2">
         GitHub
       </h2>
       <div style={{ marginTop: 8, fontFamily: "var(--mono)", fontSize: 11.5, color: "var(--muted)" }}>
@@ -1452,20 +1419,7 @@ function GitHubDoc() {
           overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "200px 1fr 80px 60px 90px",
-            padding: "10px 16px",
-            fontFamily: "var(--mono)",
-            fontSize: 10,
-            color: "var(--muted)",
-            letterSpacing: 0.6,
-            textTransform: "uppercase",
-            borderBottom: "1px solid var(--border)",
-            background: "var(--surface)",
-          }}
-        >
+        <div className="github-head">
           <div>repo</div>
           <div>description</div>
           <div>lang</div>
@@ -1482,34 +1436,31 @@ function GitHubDoc() {
               rel="noreferrer"
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(null)}
+              className="github-row pr-row"
               style={{
-                display: "grid",
-                gridTemplateColumns: "200px 1fr 80px 60px 90px",
-                padding: "11px 16px",
-                fontFamily: "var(--mono)",
-                fontSize: 12,
                 borderTop: i === 0 ? "none" : "1px solid var(--border)",
                 background: isHover
                   ? "color-mix(in oklab, var(--accent) 6%, transparent)"
                   : "transparent",
                 color: isHover ? "var(--fg)" : "var(--fg-dim)",
-                textDecoration: "none",
-                transition: "background 120ms",
               }}
             >
-              <div style={{ color: "var(--fg)" }}>{r.name}</div>
-              <div
-                style={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {r.desc || "—"}
+              <div style={{ color: "var(--fg)", fontWeight: 500 }}>{r.name}</div>
+              <div className="github-desc">{r.desc || "—"}</div>
+              <div className="hide-sm" style={{ color: "var(--muted)" }}>
+                {r.lang}
               </div>
-              <div style={{ color: "var(--muted)" }}>{r.lang}</div>
-              <div style={{ color: "var(--muted)" }}>{r.stars || "—"}</div>
-              <div style={{ color: "var(--muted)" }}>{(r.updated || "").slice(0, 7)}</div>
+              <div className="hide-sm" style={{ color: "var(--muted)" }}>
+                {r.stars || "—"}
+              </div>
+              <div className="hide-sm" style={{ color: "var(--muted)" }}>
+                {(r.updated || "").slice(0, 7)}
+              </div>
+              <div className="github-meta">
+                <span>{r.lang}</span>
+                <span>★ {r.stars || "—"}</span>
+                <span>{(r.updated || "").slice(0, 7)}</span>
+              </div>
             </a>
           );
         })}
@@ -1532,7 +1483,7 @@ function BlogIndexDoc({ onNav }) {
   return (
     <div style={{ maxWidth: 760 }}>
       {docHeader("# blog/")}
-      <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>Writing</h2>
+      <h2 className="doc-h2">Writing</h2>
       <div style={{ marginTop: 8, fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
         {POSTS.length} essays · read in-panel
       </div>
@@ -1569,17 +1520,7 @@ function BlogPostDoc({ post }) {
         {post.date} · {post.read}
         {post.tags?.length ? ` · ${post.tags.join(", ")}` : ""}
       </div>
-      <h2
-        style={{
-          fontSize: 40,
-          fontWeight: 400,
-          letterSpacing: -0.8,
-          margin: "16px 0 0",
-          lineHeight: 1.1,
-        }}
-      >
-        {post.title}
-      </h2>
+      <h2 className="doc-h2-post">{post.title}</h2>
       <div
         style={{
           fontFamily: "var(--serif)",
@@ -1610,9 +1551,7 @@ function ContactDoc() {
   return (
     <div style={{ maxWidth: 560 }}>
       {docHeader("# contact")}
-      <h2 style={{ fontSize: 40, fontWeight: 400, letterSpacing: -0.8, margin: 0 }}>
-        Say hi.
-      </h2>
+      <h2 className="doc-h2">Say hi.</h2>
       <p style={{ marginTop: 18, color: "var(--fg-dim)", fontSize: 16, lineHeight: 1.65 }}>
         Happy to talk about full-stack work, VX Engine, MCP tooling, or anything you read on the
         blog.
