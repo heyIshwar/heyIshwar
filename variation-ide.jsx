@@ -4,6 +4,7 @@ const EXPLORER_TREE = [
   { type: "file", id: "readme.md", label: "readme.md", ext: "md" },
   { type: "file", id: "now.md", label: "now.md", ext: "md" },
   { type: "file", id: "work.yaml", label: "work.yaml", ext: "yaml" },
+  { type: "file", id: "resume.md", label: "resume.md", ext: "md" },
   { type: "folder", id: "projects/", label: "projects", leaf: true },
   { type: "folder", id: "github/", label: "github", leaf: true },
   {
@@ -282,6 +283,7 @@ function CmdK({ open, onClose, onNav }) {
     { id: "readme.md", label: "readme — intro", kind: "page" },
     { id: "now.md", label: "now — this week", kind: "page" },
     { id: "work.yaml", label: "work — experience", kind: "page" },
+    { id: "resume.md", label: "resume — pdf + cv", kind: "page" },
     { id: "projects/", label: "projects", kind: "page" },
     { id: "github/", label: "github — all repos", kind: "page" },
     { id: "blog/", label: "blog — index", kind: "page" },
@@ -631,6 +633,7 @@ function VariationIDE() {
 function IDEContent({ active, onNav }) {
   if (active === "now.md") return <NowDoc />;
   if (active === "work.yaml") return <WorkDoc />;
+  if (active === "resume.md") return <ResumeDoc />;
   if (active === "projects/") return <ProjectsDoc />;
   if (active === "github/") return <GitHubDoc />;
   if (active === "blog/") return <BlogIndexDoc onNav={onNav} />;
@@ -740,6 +743,61 @@ function ReadmeDoc({ onNav }) {
   return (
     <div style={{ maxWidth: 760 }}>
       {docHeader("# readme.md")}
+
+      {SITE.openToWork && (
+        <div
+          style={{
+            marginBottom: 28,
+            padding: "14px 18px",
+            border: "1px solid color-mix(in oklab, var(--accent) 40%, var(--border))",
+            borderRadius: 6,
+            background: "color-mix(in oklab, var(--accent) 9%, transparent)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                color: "var(--accent)",
+                letterSpacing: 0.6,
+              }}
+            >
+              <Dot /> OPEN TO WORK
+            </div>
+            <div style={{ marginTop: 6, fontSize: 15, color: "var(--fg)", lineHeight: 1.45 }}>
+              {SITE.openToWorkNote}
+            </div>
+            <div
+              style={{
+                marginTop: 6,
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                color: "var(--muted)",
+              }}
+            >
+              {SITE.email} · {SITE.location}
+            </div>
+          </div>
+          <span
+            onClick={() => onNav("resume.md")}
+            style={{
+              color: "var(--accent)",
+              fontFamily: "var(--mono)",
+              fontSize: 12,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            resume.md →
+          </span>
+        </div>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 30 }}>
         <img
@@ -877,9 +935,9 @@ dx:     `}
       >
         {[
           { k: "stack", v: "node · react · ts · mongodb" },
-          { k: "across", v: "full stack · ai tooling · writing" },
-          { k: "at", v: "ishwar.dev · open source" },
-          { k: "github", v: SITE.github },
+          { k: "status", v: "open to work" },
+          { k: "across", v: "full stack · ai · enterprise" },
+          { k: "at", v: "mumbai · remote ok" },
         ].map((row) => (
           <div
             key={row.k}
@@ -1126,6 +1184,155 @@ function WorkDoc() {
           ishwar.dev/about ↗
         </a>
       </div>
+    </div>
+  );
+}
+
+function ResumeDoc() {
+  const sectionTitle = {
+    fontFamily: "var(--mono)",
+    fontSize: 11,
+    color: "var(--accent)",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    margin: "32px 0 12px",
+  };
+
+  return (
+    <div style={{ maxWidth: 820 }}>
+      {docHeader("# resume.md")}
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "baseline" }}>
+        <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>
+          {RESUME.fullName}
+        </h2>
+        <Tag accent>{RESUME.version}</Tag>
+        {SITE.openToWork && <Tag accent>open to work</Tag>}
+      </div>
+
+      <div style={{ marginTop: 10, fontFamily: "var(--mono)", fontSize: 12, lineHeight: 1.9 }}>
+        <div>
+          <span style={{ color: "var(--muted)" }}>role    </span> {RESUME.headline}
+        </div>
+        <div>
+          <span style={{ color: "var(--muted)" }}>email   </span>{" "}
+          <a href={`mailto:${SITE.email}`} style={{ color: "var(--accent)", textDecoration: "none" }}>
+            {SITE.email}
+          </a>
+        </div>
+        <div>
+          <span style={{ color: "var(--muted)" }}>phone   </span> {SITE.phone}
+        </div>
+        <div>
+          <span style={{ color: "var(--muted)" }}>loc     </span> {SITE.location}
+        </div>
+        <div>
+          <span style={{ color: "var(--muted)" }}>linkedin</span>{" "}
+          <a href={SITE.linkedin} target="_blank" rel="noreferrer" style={{ color: "var(--accent)", textDecoration: "none" }}>
+            linkedin.com/in/heyIshwar
+          </a>
+        </div>
+      </div>
+
+      <p style={{ marginTop: 24, fontSize: 16, lineHeight: 1.7, color: "var(--fg-dim)" }}>
+        {RESUME.summary}
+      </p>
+
+      <div style={sectionTitle}>skills</div>
+      <div style={{ display: "grid", gap: 10 }}>
+        {Object.entries(RESUME.skills).map(([k, v]) => (
+          <div
+            key={k}
+            style={{
+              padding: "12px 14px",
+              border: "1px solid var(--border)",
+              borderRadius: 4,
+              fontFamily: "var(--mono)",
+              fontSize: 12,
+              lineHeight: 1.55,
+            }}
+          >
+            <span style={{ color: "var(--accent)" }}>{k}: </span>
+            <span style={{ color: "var(--fg-dim)" }}>{v}</span>
+          </div>
+        ))}
+      </div>
+
+      <div style={sectionTitle}>experience</div>
+      <div style={{ display: "grid", gap: 18 }}>
+        {RESUME.experience.map((job) => (
+          <div
+            key={job.company + job.when}
+            style={{ border: "1px solid var(--border)", borderRadius: 4, padding: "18px 20px" }}
+          >
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 8 }}>
+              <div style={{ fontSize: 18 }}>{job.role}</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
+                {job.when}
+              </div>
+            </div>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent)", marginTop: 4 }}>
+              {job.company} · {job.location}
+            </div>
+            <ul style={{ margin: "14px 0 0", paddingLeft: 18, color: "var(--fg-dim)", lineHeight: 1.65 }}>
+              {job.bullets.map((b) => (
+                <li key={b.slice(0, 40)} style={{ marginBottom: 8 }}>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div style={sectionTitle}>education</div>
+      <div style={{ display: "grid", gap: 10 }}>
+        {RESUME.education.map((ed) => (
+          <div
+            key={ed.degree}
+            style={{
+              padding: "14px 16px",
+              border: "1px solid var(--border)",
+              borderRadius: 4,
+            }}
+          >
+            <div style={{ fontSize: 15 }}>{ed.degree}</div>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", marginTop: 6 }}>
+              {ed.school} · {ed.location} · {ed.when}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ ...sectionTitle, marginTop: 40 }}>pdf</div>
+      <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+        <a
+          href={RESUME.pdf}
+          download
+          style={{
+            color: "var(--accent)",
+            fontFamily: "var(--mono)",
+            fontSize: 12,
+            textDecoration: "none",
+          }}
+        >
+          download Ishwar-Sarade-Resume-v2.1.1.pdf ↓
+        </a>
+        <a
+          href={RESUME.pdf}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            color: "var(--fg-dim)",
+            fontFamily: "var(--mono)",
+            fontSize: 12,
+            textDecoration: "none",
+          }}
+        >
+          open in new tab ↗
+        </a>
+      </div>
+      <iframe title="Ishwar Sarade Resume PDF" src={RESUME.pdf} className="resume-pdf" />
     </div>
   );
 }

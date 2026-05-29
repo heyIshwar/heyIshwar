@@ -6,6 +6,12 @@ const SITE = {
   domain: "ishwar.dev",
   role: "Web & AI Engineer",
   tagline: "Full stack developer. Casual blogger.",
+  openToWork: true,
+  openToWorkNote: "Full-stack & AI engineering roles — remote or Mumbai.",
+  email: "ishwar.sarade@gmail.com",
+  phone: "+91-7744953400",
+  linkedin: "https://www.linkedin.com/in/heyIshwar",
+  location: "Mumbai, India",
   blurb:
     "I build web apps and backends, poke at AI/agent tooling, and write about what I learn on ishwar.dev — from VX Engine to MCP playbooks and the occasional reality check on tech in India.",
   quote: "Stay Hungry, Stay Foolish!",
@@ -168,6 +174,85 @@ const POSTS = [
   },
 ];
 
+const RESUME = {
+  pdf: "assets/resume/Ishwar-Sarade-Resume-v2.1.1.pdf",
+  version: "v2.1.1",
+  fullName: "Ishwar Sarade",
+  headline: "Product-focused Full-Stack & AI Engineer",
+  summary:
+    "5.8+ years architecting secure, data-heavy web applications and enterprise platforms. MERN ecosystem, AWS cloud infrastructure, and AI engineering — RAG pipelines, MCP-based agents, end-to-end ownership, automated testing, and cross-functional leadership.",
+  skills: {
+    "Languages & Frameworks":
+      "JavaScript, TypeScript, Node.js, Express.js, React.js, GraphQL",
+    "AI & Engineering":
+      "RAG, OpenAI API, Model Context Protocol (MCP), FastMCP, Agno, CrewAI",
+    Frontend: "React, MUI & Ant Design, Tailwind/Bootstrap, React Testing Library",
+    Databases: "PostgreSQL, MongoDB, MySQL",
+    "Cloud & DevOps":
+      "AWS (EC2, ECS, S3, Lambda, CloudFront, ALB, Route53, CloudWatch), Docker, Nginx, PM2",
+    "Testing & Tooling":
+      "Cypress (E2E), PyTest (API), Jest, GitLab CI/CD, Jenkins, Jira, Figma, Git",
+  },
+  experience: [
+    {
+      company: "Privacera India Private Limited",
+      location: "Pune, India",
+      role: "Full Stack Developer",
+      when: "07/2024 — current",
+      bullets: [
+        "Spearheaded AI enablement for enterprise data governance portals (Apache Ranger) by architecting RAG pipelines; authored an AI-RAG framework for teams to build agents.",
+        "Designed MCP-based agents using Agno for context-aware React navigation, automated policy generation from prompts, and in-app user assistance.",
+        "Engineered scalable frontend features in a React monorepo; collaborated with platform services and implemented backend changes in Java Spring Boot.",
+        "Led Cypress E2E automation and GitLab CI/CD pipelines — significantly reducing production regressions and sign-off times.",
+        "Optimized PyTest API automation via advanced fixture design and selective runs; stabilized Jenkins build pipelines.",
+      ],
+    },
+    {
+      company: "Mobile Programming India Private Limited",
+      location: "Pune, India",
+      role: "Full Stack Developer",
+      when: "12/2023 — 05/2024",
+      bullets: [
+        "Shootsta (enterprise video platform): React/TypeScript features and GraphQL/Express services; Jest + RTL tests; helped cut project setup from ~2 days to ~30 minutes.",
+        "Delivered modules for an AI-assisted recruitment platform with Express.js + ChatGPT integrations.",
+        "Worked across multiple repositories/services without claiming microservices ownership/deployment.",
+      ],
+    },
+    {
+      company: "Bitsmith Technologies Private Limited",
+      location: "Pune, India",
+      role: "Founder & Tech Lead",
+      when: "07/2020 — 12/2023",
+      bullets: [
+        "Owned end-to-end build of Bitsmith Classroom (ERP+LMS) and Campus (student community) on MERN + AWS; integrated Jitsi for live classes.",
+        "Architected AWS backbone (EC2, Auto Scaling, ALB, Elastic Beanstalk, API Gateway, S3, IAM, CloudFront, VPCs) with cost controls and load testing.",
+        "Shipped Cloudflare Stream for short-video and AWS Rekognition for content moderation.",
+        "Built reusable backend engine (Passport auth, emailers, logging, ORM, utilities); led React/Node/Flutter team with sprints, reviews, and VAPT.",
+      ],
+    },
+  ],
+  education: [
+    {
+      school: "Smt. Kashibai Navale College of Engineering",
+      location: "Pune, India",
+      degree: "Master of Business Administration (Marketing & Business Analytics)",
+      when: "01/2022 — 10/2024",
+    },
+    {
+      school: "Government Law College",
+      location: "Mumbai, India",
+      degree: "Diploma in Cyber Law",
+      when: "01/2021 — 05/2021",
+    },
+    {
+      school: "Smt. Kashibai Navale College of Engineering",
+      location: "Pune, India",
+      degree: "Bachelor of Engineering (Information Technology)",
+      when: "08/2016 — 05/2020",
+    },
+  ],
+};
+
 const NOW = [
   "Extending VX Engine and documenting patterns on ishwar.dev.",
   "Writing about agentic living — applied to humans, not just LLMs.",
@@ -220,4 +305,4 @@ function Divider() {
   return <div style={{ height: 1, background: "var(--border)", width: "100%" }} />;
 }
 
-Object.assign(window, { SITE, WORK, PROJECTS, POSTS, NOW, Tag, Dot, Divider });
+Object.assign(window, { SITE, WORK, PROJECTS, POSTS, NOW, RESUME, SPONSORS, Tag, Dot, Divider });
