@@ -1,5 +1,275 @@
 // IDE portfolio layout (ved1beta-style) — ishwar.dev content
 
+const EXPLORER_TREE = [
+  { type: "file", id: "readme.md", label: "readme.md", ext: "md" },
+  { type: "file", id: "now.md", label: "now.md", ext: "md" },
+  { type: "file", id: "work.yaml", label: "work.yaml", ext: "yaml" },
+  { type: "folder", id: "projects/", label: "projects", leaf: true },
+  { type: "folder", id: "github/", label: "github", leaf: true },
+  {
+    type: "folder",
+    id: "blog",
+    label: "blog",
+    indexId: "blog/",
+    children: [
+      { type: "file", id: "blog/", label: "index.md", ext: "md" },
+      ...POSTS.map((p) => ({
+        type: "file",
+        id: `blog/${p.file}`,
+        label: p.file,
+        ext: "md",
+      })),
+    ],
+  },
+  { type: "file", id: "contact", label: "contact.md", ext: "md" },
+];
+
+function IconChevron({ open, color = "var(--muted)" }) {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{
+        transform: open ? "rotate(90deg)" : "none",
+        transition: "transform 0.15s ease",
+        flexShrink: 0,
+      }}
+    >
+      <path d="M3 2 L7 5 L3 8" />
+    </svg>
+  );
+}
+
+function IconFolder({ open, color = "currentColor" }) {
+  return open ? (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.15"
+      strokeLinejoin="round"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M2 5.5h5l1.2 1.8H14V13H2V5.5z" />
+      <path d="M2 5.5V4.5h5l1.2 1H14" />
+    </svg>
+  ) : (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.15"
+      strokeLinejoin="round"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M2 4h5.2l1.3 2H14v7.5H2V4z" />
+    </svg>
+  );
+}
+
+function IconFile({ ext = "file", color = "currentColor" }) {
+  const tab =
+    ext === "md" ? "#6cb6ff" : ext === "yaml" ? "#d4a574" : ext === "json" ? "#f0c674" : "#888";
+
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.15"
+      strokeLinejoin="round"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M4.5 2.5h4.8l2.2 2.2v8.8H4.5V2.5z" />
+      <path d="M9.3 2.5v2.2h2.2" />
+      <path d="M4.5 2.5v11" stroke={tab} strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ExplorerRow({ depth, active, onSelect, node, open, onToggle }) {
+  const isFolder = node.type === "folder";
+  const hasChildren = isFolder && node.children?.length;
+  const navId = isFolder && !node.leaf ? node.indexId || node.id : node.id;
+  const isActive =
+    active === node.id ||
+    active === navId ||
+    (isFolder && !node.leaf && active === node.indexId);
+
+  const iconColor = isActive ? "var(--accent)" : "var(--muted)";
+
+  function handleClick() {
+    const target = isFolder ? node.indexId || node.id : node.id;
+    if (hasChildren && !open) onToggle(node.id);
+    onSelect(target);
+  }
+
+  function handleChevron(e) {
+    e.stopPropagation();
+    if (hasChildren) onToggle(node.id);
+  }
+
+  return (
+    <div
+      className="explorer-row"
+      onClick={handleClick}
+      style={{
+        padding: "4px 10px 4px 0",
+        paddingLeft: 8 + depth * 14,
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        fontFamily: "var(--mono)",
+        fontSize: 12,
+        color: isActive ? "var(--accent)" : "var(--fg-dim)",
+        background: isActive
+          ? "color-mix(in oklab, var(--accent) 7%, transparent)"
+          : "transparent",
+        borderLeft: isActive ? "2px solid var(--accent)" : "2px solid transparent",
+        cursor: "pointer",
+        userSelect: "none",
+      }}
+    >
+      <span
+        onClick={hasChildren ? handleChevron : undefined}
+        style={{
+          width: 14,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: hasChildren ? 1 : 0,
+          cursor: hasChildren ? "pointer" : "default",
+        }}
+      >
+        {hasChildren ? <IconChevron open={open} color={iconColor} /> : null}
+      </span>
+      {isFolder ? (
+        <IconFolder open={hasChildren && open} color={iconColor} />
+      ) : (
+        <IconFile ext={node.ext} color={iconColor} />
+      )}
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {node.label}
+        {node.leaf ? "/" : ""}
+      </span>
+    </div>
+  );
+}
+
+function Explorer({ active, onSelect }) {
+  const [openFolders, setOpenFolders] = React.useState({ blog: true, root: true });
+
+  React.useEffect(() => {
+    if (active.startsWith("blog")) {
+      setOpenFolders((o) => ({ ...o, blog: true, root: true }));
+    }
+  }, [active]);
+
+  function toggle(id) {
+    setOpenFolders((o) => ({ ...o, [id]: !o[id] }));
+  }
+
+  function renderNode(node, depth) {
+    const rows = [
+      <ExplorerRow
+        key={node.id}
+        depth={depth}
+        active={active}
+        node={node}
+        open={!!openFolders[node.id]}
+        onToggle={toggle}
+        onSelect={onSelect}
+      />,
+    ];
+    if (node.type === "folder" && node.children?.length && openFolders[node.id]) {
+      node.children.forEach((child) => {
+        rows.push(...renderNode(child, depth + 1));
+      });
+    }
+    return rows;
+  }
+
+  return (
+    <div style={{ padding: "18px 0" }}>
+      <div
+        style={{
+          padding: "0 16px 10px",
+          fontFamily: "var(--mono)",
+          fontSize: 10,
+          color: "var(--muted)",
+          letterSpacing: 0.8,
+          textTransform: "uppercase",
+        }}
+      >
+        Explorer
+      </div>
+      <ExplorerRow
+        depth={0}
+        active={active}
+        node={{ type: "folder", id: "root", label: SITE.domain, indexId: "readme.md", children: EXPLORER_TREE }}
+        open={!!openFolders.root}
+        onToggle={toggle}
+        onSelect={onSelect}
+      />
+      {openFolders.root &&
+        EXPLORER_TREE.flatMap((node) => renderNode(node, 1))}
+      <div
+        style={{
+          padding: "20px 16px 8px",
+          fontFamily: "var(--mono)",
+          fontSize: 10,
+          color: "var(--muted)",
+          letterSpacing: 0.8,
+          textTransform: "uppercase",
+        }}
+      >
+        Links
+      </div>
+      {[
+        { label: SITE.domain, href: "https://ishwar.dev" },
+        { label: `github/${SITE.github}`, href: `https://github.com/${SITE.github}` },
+        { label: `x/${SITE.x.slice(1)}`, href: "https://x.com/IshwarSarade" },
+        { label: `ig/${SITE.instagram}`, href: "https://www.instagram.com/hey_ishwar/" },
+      ].map((link) => (
+        <a
+          key={link.href}
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          className="explorer-row"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 16px 4px 36px",
+            fontFamily: "var(--mono)",
+            fontSize: 12,
+            color: "var(--fg-dim)",
+            textDecoration: "none",
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--muted)" strokeWidth="1.2">
+            <path d="M6 3h7v7M13 3L5 11M9 11H3v6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {link.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 function CmdK({ open, onClose, onNav }) {
   const [q, setQ] = React.useState("");
   const inputRef = React.useRef(null);
@@ -223,21 +493,6 @@ function VariationIDE() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const files = [
-    { id: "readme.md", label: "readme.md", group: "" },
-    { id: "now.md", label: "now.md", group: "" },
-    { id: "work.yaml", label: "work.yaml", group: "" },
-    { id: "projects/", label: "projects/", group: "dir" },
-    { id: "github/", label: "github/", group: "dir" },
-    { id: "blog/", label: "blog/", group: "dir" },
-    ...POSTS.map((p) => ({
-      id: `blog/${p.file}`,
-      label: `  ${p.file}`,
-      group: "nested",
-    })),
-    { id: "contact", label: "contact", group: "" },
-  ];
-
   return (
     <div
       style={{
@@ -300,115 +555,8 @@ function VariationIDE() {
         </div>
       </div>
 
-      <div
-        style={{ borderRight: "1px solid var(--border)", padding: "18px 0", overflow: "auto" }}
-      >
-        <div
-          style={{
-            padding: "0 16px 10px",
-            fontFamily: "var(--mono)",
-            fontSize: 10,
-            color: "var(--muted)",
-            letterSpacing: 0.8,
-            textTransform: "uppercase",
-          }}
-        >
-          Explorer
-        </div>
-        {files.map((f) => (
-          <div
-            key={f.id}
-            onClick={() => setActive(f.id)}
-            style={{
-              padding: f.group === "nested" ? "5px 16px 5px 32px" : "5px 16px",
-              fontFamily: "var(--mono)",
-              fontSize: 12.5,
-              color: active === f.id ? "var(--accent)" : "var(--fg-dim)",
-              background:
-                active === f.id
-                  ? "color-mix(in oklab, var(--accent) 7%, transparent)"
-                  : "transparent",
-              borderLeft:
-                active === f.id ? "2px solid var(--accent)" : "2px solid transparent",
-              cursor: "pointer",
-            }}
-          >
-            {f.group === "dir" ? "▸ " : ""}
-            {f.label}
-          </div>
-        ))}
-        <div
-          style={{
-            padding: "24px 16px 10px",
-            fontFamily: "var(--mono)",
-            fontSize: 10,
-            color: "var(--muted)",
-            letterSpacing: 0.8,
-            textTransform: "uppercase",
-          }}
-        >
-          Links
-        </div>
-        <a
-          href="https://ishwar.dev"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: "block",
-            padding: "5px 16px",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            color: "var(--fg-dim)",
-            textDecoration: "none",
-          }}
-        >
-          {SITE.domain}
-        </a>
-        <a
-          href={`https://github.com/${SITE.github}`}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: "block",
-            padding: "5px 16px",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            color: "var(--fg-dim)",
-            textDecoration: "none",
-          }}
-        >
-          github/{SITE.github}
-        </a>
-        <a
-          href="https://x.com/IshwarSarade"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: "block",
-            padding: "5px 16px",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            color: "var(--fg-dim)",
-            textDecoration: "none",
-          }}
-        >
-          x/{SITE.x.slice(1)}
-        </a>
-        <a
-          href="https://www.instagram.com/hey_ishwar/"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            display: "block",
-            padding: "5px 16px",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            color: "var(--fg-dim)",
-            textDecoration: "none",
-          }}
-        >
-          ig/{SITE.instagram}
-        </a>
+      <div style={{ borderRight: "1px solid var(--border)", overflow: "auto" }}>
+        <Explorer active={active} onSelect={setActive} />
       </div>
 
       <div style={{ overflow: "auto", padding: "40px 56px 80px" }}>
