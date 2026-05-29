@@ -1,3 +1,3 @@
 # Ishwar
 
-IDE-style portfolio — **[heyishwar.github.io](https://heyishwar.github.io/)**
+**[heyishwar.github.io](https://heyishwar.github.io/)**
