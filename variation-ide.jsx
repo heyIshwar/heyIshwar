@@ -621,14 +621,12 @@ function ReadmeDoc({ onNav }) {
             }}
           >
             <Dot /> latest post:{" "}
-            <a
-              href={latestPost.url}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: "var(--accent)", textDecoration: "none" }}
+            <span
+              onClick={() => onNav(`blog/${latestPost.file}`)}
+              style={{ color: "var(--accent)", cursor: "pointer" }}
             >
               {latestPost.slug}
-            </a>
+            </span>
             <span style={{ color: "#444" }}> · </span>
             <span>{latestPost.date}</span>
           </div>
@@ -1181,10 +1179,7 @@ function BlogIndexDoc({ onNav }) {
       {docHeader("# blog/")}
       <h2 style={{ fontSize: 36, fontWeight: 400, letterSpacing: -0.6, margin: 0 }}>Writing</h2>
       <div style={{ marginTop: 8, fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
-        full essays on{" "}
-        <a href="https://ishwar.dev" style={{ color: "var(--accent)", textDecoration: "none" }}>
-          ishwar.dev
-        </a>
+        {POSTS.length} essays · read in-panel
       </div>
       <div style={{ marginTop: 28 }}>
         {POSTS.map((p) => (
@@ -1210,11 +1205,14 @@ function BlogIndexDoc({ onNav }) {
 }
 
 function BlogPostDoc({ post }) {
+  const html = BLOG_CONTENT[post.file];
+
   return (
     <div style={{ maxWidth: 720 }}>
       {docHeader("# blog/" + post.file)}
       <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
         {post.date} · {post.read}
+        {post.tags?.length ? ` · ${post.tags.join(", ")}` : ""}
       </div>
       <h2
         style={{
@@ -1238,25 +1236,17 @@ function BlogPostDoc({ post }) {
       >
         {post.sub}
       </div>
-      <div style={{ marginTop: 24 }}>
-        <a
-          href={post.url}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            color: "var(--accent)",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            textDecoration: "none",
-          }}
-        >
-          READ ON ISHWAR.DEV →
-        </a>
-      </div>
-      <p style={{ marginTop: 20, color: "var(--muted)", fontSize: 14, lineHeight: 1.6 }}>
-        Posts live on the WordPress site — this panel is the index. Open the link above for the
-        full essay with images and formatting.
-      </p>
+      {html ? (
+        <div
+          className="blog-prose"
+          style={{ marginTop: 32 }}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : (
+        <p style={{ marginTop: 24, color: "var(--muted)", fontSize: 14 }}>
+          Content missing for this post.
+        </p>
+      )}
     </div>
   );
 }

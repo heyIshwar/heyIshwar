@@ -10,8 +10,7 @@ const SITE = {
     "I build web apps and backends, poke at AI/agent tooling, and write about what I learn on ishwar.dev — from VX Engine to MCP playbooks and the occasional reality check on tech in India.",
   quote: "Stay Hungry, Stay Foolish!",
   quoteAttribution: "Steve Jobs",
-  headshot:
-    "https://ishwar.dev/wp-content/uploads/2025/11/IMG_20250906_170613692-edited-scaled.jpg",
+  headshot: "assets/images/ishwar.jpg",
   x: "@IshwarSarade",
   github: "heyIshwar",
   instagram: "hey_ishwar",
