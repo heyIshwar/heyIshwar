@@ -25,6 +25,36 @@ const EXPLORER_TREE = [
   { type: "file", id: "contact", label: "contact.md", ext: "md" },
 ];
 
+const DEFAULT_ROUTE = "readme.md";
+
+function getValidRoutes() {
+  return new Set([
+    DEFAULT_ROUTE,
+    "now.md",
+    "work.yaml",
+    "resume.md",
+    "projects/",
+    "github/",
+    "blog/",
+    "contact",
+    ...POSTS.map((p) => `blog/${p.file}`),
+  ]);
+}
+
+function parseRouteFromHash() {
+  const raw = window.location.hash.replace(/^#/, "").replace(/^\//, "").trim();
+  if (!raw) return DEFAULT_ROUTE;
+  try {
+    const path = decodeURIComponent(raw);
+    if (getValidRoutes().has(path)) return path;
+  } catch {}
+  return DEFAULT_ROUTE;
+}
+
+function routeToHash(id) {
+  return `#/${id.split("/").map(encodeURIComponent).join("/")}`;
+}
+
 function IconChevron({ open, color = "var(--muted)" }) {
   return (
     <svg
@@ -496,14 +526,37 @@ function CmdK({ open, onClose, onNav }) {
 }
 
 function VariationIDE() {
-  const [active, setActive] = React.useState("readme.md");
+  const [active, setActive] = React.useState(() => parseRouteFromHash());
   const [palette, setPalette] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   function navigate(id) {
-    setActive(id);
     setSidebarOpen(false);
+    const hash = routeToHash(id);
+    if (window.location.hash !== hash) {
+      window.location.hash = hash;
+      return;
+    }
+    setActive(id);
   }
+
+  React.useEffect(() => {
+    function syncFromHash() {
+      const route = parseRouteFromHash();
+      const hash = routeToHash(route);
+      if (window.location.hash !== hash) {
+        window.history.replaceState(null, "", hash);
+      }
+      setActive(route);
+    }
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, []);
+
+  React.useEffect(() => {
+    document.title = `${SITE.domain} — ${active}`;
+  }, [active]);
 
   React.useEffect(() => {
     function onKey(e) {
@@ -545,7 +598,7 @@ function VariationIDE() {
             <span style={{ width: 10, height: 10, borderRadius: 999, background: "#2a2a2a" }} />
             <span style={{ width: 10, height: 10, borderRadius: 999, background: "#2a2a2a" }} />
           </div>
-          <span className="ide-topbar-path">~/{SITE.domain}</span>
+          <span className="ide-topbar-path">~/{SITE.domain}/{active}</span>
           <span className="hide-sm" style={{ color: "var(--accent)" }}>
             · main
           </span>
