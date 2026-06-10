@@ -1,6 +1,175 @@
 // Auto-generated blog HTML from ishwar.dev — do not hand-edit
 
 const BLOG_CONTENT = {
+  "sniffr.md": `<hr/>
+
+
+
+<h2>Point it at a machine. See what leaks.</h2>
+
+
+
+<p>Every dev machine accumulates risk — API keys in <code>.env</code> files with loose permissions, tokens committed to git by accident, AI provider keys sitting in project folders. I kept wanting a single tool that <em>sniffs</em> for these problems locally, scores posture, and gives you a dashboard — not another SaaS scanner.</p>
+
+
+
+<p>So I built <strong>sniffr</strong>.</p>
+
+
+
+<h2>✨ Meet Sniffr</h2>
+
+
+
+<p>A machine security analysis CLI. Pluggable <strong>probes</strong> scan for:</p>
+
+
+
+<ul>
+<li><strong>Leaked credentials</strong> — AI/cloud/VCS keys, tokens, private keys, DB URLs (keyword pre-filter + regex + entropy)</li>
+
+
+
+<li><strong>Weak file permissions</strong> — <code>.env</code>, key, and credential files readable by group/other</li>
+
+
+
+<li><strong>Git exposure</strong> — secret files tracked in version control</li>
+
+
+
+<li><strong>macOS host posture</strong> — FileVault, Gatekeeper, SIP, firewall (Darwin only today)</li>
+</ul>
+
+
+
+<p>Everything lands in one <strong>SQLite</strong> database, gets a severity-weighted <strong>posture score</strong>, and renders a single-file <code>release.html</code> dashboard.</p>
+
+
+
+<p>Explore the repo:<br>👉 <a href="https://github.com/heyIshwar/sniffr">https://github.com/heyIshwar/sniffr</a></p>
+
+
+
+<hr/>
+
+
+
+<h1>🎯 Why Sniffr Exists</h1>
+
+
+
+<p>Secret-leak detection is one module — not the whole product. The core is a <strong>probe architecture</strong>: add a new check by implementing the <code>Probe</code> interface and registering it. No core changes.</p>
+
+
+
+<p>Most security tools either:</p>
+
+
+
+<ul>
+<li>live in the cloud and need your code uploaded somewhere</li>
+
+
+
+<li>are one-off scripts that don't persist findings or trend posture over time</li>
+
+
+
+<li>dump raw secrets to logs (bad idea)</li>
+</ul>
+
+
+
+<p>Sniffr keeps everything local. Secrets are <strong>masked</strong> before storage — the raw value is never persisted or logged. The database and HTML report are written <code>chmod 600</code>. <code>remediate</code> is dry-run unless you pass <code>--apply</code>.</p>
+
+
+
+<hr/>
+
+
+
+<h1>🚀 Try it in 10 seconds</h1>
+
+
+
+<p>No clone needed:</p>
+
+
+
+<pre><code>npx github:heyIshwar/sniffr audit ~/projects
+npx github:heyIshwar/sniffr probes
+</code></pre>
+
+
+
+<p>Or install globally:</p>
+
+
+
+<pre><code>npm install -g github:heyIshwar/sniffr
+sniffr audit ~/projects
+sniffr score
+sniffr findings --severity critical
+</code></pre>
+
+
+
+<hr/>
+
+
+
+<h1>🔌 Probes at a glance</h1>
+
+
+
+<table>
+<thead><tr><th>Probe</th><th>Category</th><th>What it sniffs</th></tr></thead>
+<tbody>
+<tr><td><code>secrets</code></td><td>Credentials</td><td>AI/cloud/VCS keys, tokens, private keys</td></tr>
+<tr><td><code>perms</code></td><td>Filesystem</td><td>World-readable env/key files</td></tr>
+<tr><td><code>git-expose</code></td><td>Credentials</td><td>Secret files tracked in git</td></tr>
+<tr><td><code>macos-posture</code></td><td>Encryption</td><td>FileVault, Gatekeeper, SIP, firewall</td></tr>
+</tbody>
+</table>
+
+
+
+<p>Run a subset: <code>sniffr scan secrets perms</code>. Export findings: <code>sniffr export --format sarif|json|md</code>. Baseline ignores live in the db: <code>sniffr ignore add &lt;fingerprint&gt;</code>.</p>
+
+
+
+<hr/>
+
+
+
+<h1>📦 What's next</h1>
+
+
+
+<ul>
+<li>Live <code>--verify</code> (read-only, opt-in)</li>
+
+
+
+<li><code>serve</code> web UI over the SQLite db</li>
+
+
+
+<li>Go flavor — single static binary, same rules pack</li>
+
+
+
+<li>SSH / network / persistence probes</li>
+</ul>
+
+
+
+<p>Node flavor is working today. Apache-2.0 licensed.</p>
+
+
+
+<p>👉 <strong>GitHub:</strong> <a href="https://github.com/heyIshwar/sniffr">github.com/heyIshwar/sniffr</a><br>Run it on your machine. See what you've been ignoring.</p>`,
   "agentic.md": `<hr/>
 
 

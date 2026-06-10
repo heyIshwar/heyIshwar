@@ -47,7 +47,7 @@ const WORK = [
     role: "Web & AI Engineer",
     when: "present",
     what:
-      "Shipping full-stack products, open-source tools (VX Engine, MCP utilities), and long-form posts on engineering culture, agents, and developer experience.",
+      "Shipping full-stack products, open-source tools (sniffr, VX Engine, MCP utilities), and long-form posts on engineering culture, agents, and developer experience.",
   },
   {
     who: "Writing",
@@ -59,6 +59,16 @@ const WORK = [
 ];
 
 const PROJECTS = [
+  {
+    name: "sniffr",
+    sub: "machine security audit CLI",
+    desc:
+      "Pluggable probes sniff leaked AI/cloud/VCS keys, weak file permissions, secrets in git, and macOS host posture. SQLite-backed findings, severity-weighted score, single-file HTML dashboard. Run with npx — no clone needed.",
+    repo: "heyIshwar/sniffr",
+    url: "https://github.com/heyIshwar/sniffr",
+    stack: "TypeScript · SQLite",
+    featured: true,
+  },
   {
     name: "VX Engine",
     sub: "production-ready Node.js backend you can build on",
@@ -109,6 +119,17 @@ const PROJECTS = [
 ];
 
 const POSTS = [
+  {
+    slug: "introducing-sniffr",
+    file: "sniffr.md",
+    title: "Introducing Sniffr",
+    sub: "Machine security audit CLI — sniff leaked keys, weak perms, and host posture",
+    date: "2026-06-10",
+    read: "6 min",
+    tags: ["security", "open-source", "cli"],
+    url: "https://ishwar.dev/#/blog/sniffr.md",
+    featured: true,
+  },
   {
     slug: "lets-be-more-agentic-shall-we",
     file: "agentic.md",
@@ -263,6 +284,7 @@ const RESUME = {
 };
 
 const NOW = [
+  "Shipping sniffr — machine security audit CLI with pluggable probes.",
   "Extending VX Engine and documenting patterns on ishwar.dev.",
   "Writing about agentic living — applied to humans, not just LLMs.",
   "Experimenting with MCP servers built from real site APIs.",
@@ -360,7 +382,7 @@ function getRouteSeo(route) {
     "projects/": {
       title: `Projects — ${SITE.name}`,
       description:
-        "Open-source projects by Ishwar Sarade — VX Engine, MCP utilities, React experiments, and more.",
+        "Open-source projects by Ishwar Sarade — sniffr, VX Engine, MCP utilities, React experiments, and more.",
     },
     "github/": {
       title: `GitHub — ${SITE.github}`,
