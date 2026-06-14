@@ -47,7 +47,7 @@ const WORK = [
     role: "Web & AI Engineer",
     when: "present",
     what:
-      "Shipping full-stack products, open-source tools (sniffr, VX Engine, MCP utilities), and long-form posts on engineering culture, agents, and developer experience.",
+      "Shipping full-stack products, open-source tools (sniffr, HyperFocus, VX Engine, MCP utilities), and long-form posts on engineering culture, agents, and developer experience.",
   },
   {
     who: "Writing",
@@ -67,6 +67,16 @@ const PROJECTS = [
     repo: "heyIshwar/sniffr",
     url: "https://github.com/heyIshwar/sniffr",
     stack: "TypeScript · SQLite",
+    featured: true,
+  },
+  {
+    name: "HyperFocus",
+    sub: "ADHD productivity dashboard",
+    desc:
+      "Dark-themed focus dashboard for ADHD brains — tasks, focus timer, hydration, music, breaks, and XP. Guest mode gives you a random cat name and saves everything locally on device. Google sign-in syncs tasks across devices via Firebase.",
+    repo: "heyIshwar/adhd-dashboard",
+    url: "https://ishwar-adhd-dashboard.web.app",
+    stack: "React · Firebase · Vite",
     featured: true,
   },
   {
@@ -284,6 +294,7 @@ const RESUME = {
 };
 
 const NOW = [
+  "Shipping HyperFocus guest mode — try the ADHD dashboard without sign-in.",
   "Shipping sniffr — machine security audit CLI with pluggable probes.",
   "Extending VX Engine and documenting patterns on ishwar.dev.",
   "Writing about agentic living — applied to humans, not just LLMs.",
@@ -382,7 +393,7 @@ function getRouteSeo(route) {
     "projects/": {
       title: `Projects — ${SITE.name}`,
       description:
-        "Open-source projects by Ishwar Sarade — sniffr, VX Engine, MCP utilities, React experiments, and more.",
+        "Open-source projects by Ishwar Sarade — sniffr, HyperFocus, VX Engine, MCP utilities, React experiments, and more.",
     },
     "github/": {
       title: `GitHub — ${SITE.github}`,
