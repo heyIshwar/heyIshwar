@@ -1016,7 +1016,9 @@ dx:     `}
               {featured[0].name}{" "}
               <span style={{ color: "var(--muted)" }}>— {featured[0].sub.toLowerCase()}</span>
             </span>
-            <span style={wireMeta}>github →</span>
+            <span style={wireMeta}>
+              {featured[0].url.includes("github.com") ? "github →" : "live demo →"}
+            </span>
           </a>
           <div style={{ borderTop: "1px solid var(--border)" }} />
           <div onClick={() => onNav && onNav("now.md")} className="wire-row readme-card">

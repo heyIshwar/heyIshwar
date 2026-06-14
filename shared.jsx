@@ -60,16 +60,6 @@ const WORK = [
 
 const PROJECTS = [
   {
-    name: "sniffr",
-    sub: "machine security audit CLI",
-    desc:
-      "Pluggable probes sniff leaked AI/cloud/VCS keys, weak file permissions, secrets in git, and macOS host posture. SQLite-backed findings, severity-weighted score, single-file HTML dashboard. Run with npx — no clone needed.",
-    repo: "heyIshwar/sniffr",
-    url: "https://github.com/heyIshwar/sniffr",
-    stack: "TypeScript · SQLite",
-    featured: true,
-  },
-  {
     name: "HyperFocus",
     sub: "ADHD productivity dashboard",
     desc:
@@ -77,6 +67,16 @@ const PROJECTS = [
     repo: "heyIshwar/adhd-dashboard",
     url: "https://ishwar-adhd-dashboard.web.app",
     stack: "React · Firebase · Vite",
+    featured: true,
+  },
+  {
+    name: "sniffr",
+    sub: "machine security audit CLI",
+    desc:
+      "Pluggable probes sniff leaked AI/cloud/VCS keys, weak file permissions, secrets in git, and macOS host posture. SQLite-backed findings, severity-weighted score, single-file HTML dashboard. Run with npx — no clone needed.",
+    repo: "heyIshwar/sniffr",
+    url: "https://github.com/heyIshwar/sniffr",
+    stack: "TypeScript · SQLite",
     featured: true,
   },
   {
