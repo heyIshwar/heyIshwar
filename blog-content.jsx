@@ -1,6 +1,153 @@
 // Auto-generated blog HTML from ishwar.dev — do not hand-edit
 
 const BLOG_CONTENT = {
+  "folder-sort.md": `<hr/>
+
+<h2>Desktop full of screenshots. Downloads full of chaos. Fix once.</h2>
+
+<p>I got tired of <code>Screenshot 2026-…</code> wallpapering my Desktop, and of loose <code>.dmg</code> / <code>.pdf</code> / <code>.png</code> files rotting at the top of Downloads. macOS already has the tools — you just have to wire them.</p>
+
+<p>No Hazel. No Shortcuts circus. No AI agent. A tiny <strong>LaunchAgent</strong> + bash script.</p>
+
+<p>Open source:<br>👉 <a href="https://github.com/heyIshwar/macos-folder-sort">https://github.com/heyIshwar/macos-folder-sort</a></p>
+
+<hr/>
+
+<h2>TL;DR 🧰</h2>
+
+<ul>
+<li>Point Screenshot save path at <code>~/Pictures/Screenshots</code></li>
+<li>LaunchAgent watches Desktop, Screenshots, Downloads</li>
+<li>Videos auto-move to <code>~/Pictures/Recordings</code></li>
+<li>Top-level Downloads files sort into category folders by extension</li>
+<li><strong>Never</strong> crawls into subfolders (private folders stay private)</li>
+</ul>
+
+<hr/>
+
+<h2>😤 The Screenshot trap</h2>
+
+<p>macOS Screenshot (<code>Cmd+Shift+3/4/5</code>) only supports <strong>one</strong> save location for both images and screen recordings. So if you set:</p>
+
+<pre><code>defaults write com.apple.screencapture location -string "$HOME/Pictures/Screenshots"
+</code></pre>
+
+<p>…recordings land there too. Fine for the system. Annoying for humans.</p>
+
+<p>Solution: let the system dump both into Screenshots, then move <code>.mov</code> / <code>.mp4</code> to Recordings the moment they appear.</p>
+
+<hr/>
+
+<h2>⚙️ LaunchAgent, not a daemon you babysit</h2>
+
+<p>A LaunchAgent with <code>WatchPaths</code> sleeps until a watched folder changes, then runs your script. Idle most of the day. No always-on CPU tax.</p>
+
+<pre><code>&lt;!-- launchd/com.ishwar.folder-sort.plist.template (abbrev) --&gt;
+&lt;key&gt;Label&lt;/key&gt;
+&lt;string&gt;com.ishwar.folder-sort&lt;/string&gt;
+&lt;key&gt;ProgramArguments&lt;/key&gt;
+&lt;array&gt;
+  &lt;string&gt;/bin/bash&lt;/string&gt;
+  &lt;string&gt;__HOME__/Library/Application Support/folder-sort/bin/sort.sh&lt;/string&gt;
+&lt;/array&gt;
+&lt;key&gt;WatchPaths&lt;/key&gt;
+&lt;array&gt;
+  &lt;string&gt;__HOME__/Pictures/Screenshots&lt;/string&gt;
+  &lt;string&gt;__HOME__/Desktop&lt;/string&gt;
+  &lt;string&gt;__HOME__/Downloads&lt;/string&gt;
+&lt;/array&gt;
+&lt;key&gt;ThrottleInterval&lt;/key&gt;
+&lt;integer&gt;2&lt;/integer&gt;
+</code></pre>
+
+<hr/>
+
+<h2>📂 What the sorter does</h2>
+
+<pre><code># Captures: videos that landed in Screenshots → Recordings
+find "$SCREENSHOTS_DIR" -maxdepth 1 -type f \\( -iname '*.mov' -o -iname '*.mp4' \\) …
+
+# Desktop sweep
+#   Screenshot*  → Pictures/Screenshots
+#   Screen Recording* / *.mov → Pictures/Recordings
+
+# Downloads: TOP-LEVEL files only (maxdepth 1)
+#   .pdf → Documents/   .dmg → Installers/   .png → Images/   …
+</code></pre>
+
+<p>Full script lives in the repo: <a href="https://github.com/heyIshwar/macos-folder-sort/blob/main/bin/sort.sh"><code>bin/sort.sh</code></a>.</p>
+
+<hr/>
+
+<h2>📥 Downloads, same trick</h2>
+
+<p>Screenshots were the itch. Downloads was the infection. Same agent, bigger win: only sort <strong>loose files at the root</strong> of Downloads into generic buckets.</p>
+
+<figure><table>
+<thead><tr><th>Folder</th><th>Extensions</th></tr></thead>
+<tbody>
+<tr><td>Images</td><td>png jpg jpeg gif webp heic svg …</td></tr>
+<tr><td>Documents</td><td>pdf docx xlsx pptx txt csv md …</td></tr>
+<tr><td>Archives</td><td>zip rar 7z tar gz …</td></tr>
+<tr><td>Installers</td><td>dmg pkg msi exe iso …</td></tr>
+<tr><td>Video / Audio / Fonts / Torrents / Projects / Misc</td><td>the usual suspects</td></tr>
+</tbody>
+</table></figure>
+
+<p>If your folder names differ, drop overrides in <code>local.env</code> (gitignored) — the public defaults stay generic on purpose.</p>
+
+<hr/>
+
+<h2>ASCII before / after (fake names only)</h2>
+
+<pre><code>BEFORE Desktop                 AFTER Desktop
+├── Screenshot ….png           (captures gone)
+├── Screen Recording ….mov
+└── random-clutter.pdf
+
+BEFORE Downloads/              AFTER Downloads/
+├── setup-demo.dmg             ├── Installers/setup-demo.dmg
+├── notes-demo.pdf             ├── Documents/notes-demo.pdf
+└── meme-demo.png              └── Images/meme-demo.png
+</code></pre>
+
+<hr/>
+
+<h2>🚀 Install</h2>
+
+<pre><code>git clone https://github.com/heyIshwar/macos-folder-sort.git
+cd macos-folder-sort
+chmod +x install.sh uninstall.sh bin/sort.sh
+./install.sh
+</code></pre>
+
+<p><code>install.sh</code> copies into <code>~/Library/Application Support/folder-sort/</code>, bootstraps the agent, sets the Screenshot location, and runs one sort pass.</p>
+
+<p>Uninstall is safe — removes the agent only, leaves your media alone:</p>
+
+<pre><code>./uninstall.sh
+</code></pre>
+
+<hr/>
+
+<h2>🔒 Privacy</h2>
+
+<ul>
+<li>Sorter <strong>never</strong> enters subfolders — only top-level loose files</li>
+<li>Keep sensitive stuff inside dedicated folders; the agent ignores them</li>
+<li>Don't commit <code>local.env</code> or real filenames to public forks</li>
+<li>This post uses demo names only — no dumps of anyone's real Downloads</li>
+</ul>
+
+<hr/>
+
+<h2>Ship it</h2>
+
+<p>I wanted Desktop zero and Downloads that stay readable without paying for a file babysitter. Native macOS + ~100 lines of bash was enough.</p>
+
+<p>Repo again: <a href="https://github.com/heyIshwar/macos-folder-sort">heyIshwar/macos-folder-sort</a></p>
+`,
+
   "sniffr.md": `<hr/>
 
 

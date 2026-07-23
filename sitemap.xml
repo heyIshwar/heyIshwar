@@ -31,6 +31,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://ishwar.dev/#/blog/folder-sort.md</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://ishwar.dev/#/blog/sniffr.md</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>

@@ -60,6 +60,16 @@ const WORK = [
 
 const PROJECTS = [
   {
+    name: "macos-folder-sort",
+    sub: "LaunchAgent file sorter — no Hazel, no AI",
+    desc:
+      "macOS launchd agent that parks screenshots and recordings under Pictures, and sorts top-level Downloads by extension into category folders. WatchPaths + bash only.",
+    repo: "heyIshwar/macos-folder-sort",
+    url: "https://github.com/heyIshwar/macos-folder-sort",
+    stack: "bash · launchd",
+    featured: true,
+  },
+  {
     name: "HyperFocus",
     sub: "ADHD productivity dashboard",
     desc:
@@ -129,6 +139,17 @@ const PROJECTS = [
 ];
 
 const POSTS = [
+  {
+    slug: "macos-folder-sort",
+    file: "folder-sort.md",
+    title: "Desktop Zero: macOS LaunchAgent File Sorting",
+    sub: "Screenshots, recordings, and Downloads — no Hazel, no AI, just launchd",
+    date: "2026-07-23",
+    read: "7 min",
+    tags: ["macos", "dx", "open-source"],
+    url: "https://ishwar.dev/#/blog/folder-sort.md",
+    featured: true,
+  },
   {
     slug: "introducing-sniffr",
     file: "sniffr.md",
