@@ -461,15 +461,29 @@ function setLinkRel(rel, href) {
   el.setAttribute("href", href);
 }
 
+function upsertJsonLd(id, payload) {
+  if (typeof document === "undefined") return;
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("script");
+    el.type = "application/ld+json";
+    el.id = id;
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(payload);
+}
+
 function updatePageSeo(route) {
   const seo = getRouteSeo(route);
   const pageUrl = routeToPublicUrl(route);
   const image = absoluteAsset(SITE.headshot);
+  const post = POSTS.find((p) => `blog/${p.file}` === route);
+  const isArticle = Boolean(post) || route.startsWith("blog/");
 
-  document.title = `${SITE.domain} — ${route}`;
+  document.title = `${seo.title} | ${SITE.domain}`;
   setMeta("name", "description", seo.description);
   setMeta("name", "robots", "index, follow, max-image-preview:large");
-  setMeta("property", "og:type", route.startsWith("blog/") ? "article" : "website");
+  setMeta("property", "og:type", isArticle && post ? "article" : "website");
   setMeta("property", "og:site_name", SITE.domain);
   setMeta("property", "og:title", seo.title);
   setMeta("property", "og:description", seo.description);
@@ -483,6 +497,32 @@ function updatePageSeo(route) {
   setMeta("name", "twitter:description", seo.description);
   setMeta("name", "twitter:image", image);
   setLinkRel("canonical", pageUrl);
+
+  if (post) {
+    setMeta("property", "article:published_time", `${post.date}T00:00:00+05:30`);
+    setMeta("property", "article:author", SITE.name);
+    upsertJsonLd("ld-blogposting", {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: seo.description,
+      datePublished: post.date,
+      author: {
+        "@type": "Person",
+        "@id": "https://ishwar.dev/#person",
+        name: SITE.name,
+        url: "https://ishwar.dev/",
+      },
+      image,
+      url: pageUrl,
+      mainEntityOfPage: pageUrl,
+      isPartOf: { "@id": "https://ishwar.dev/#website" },
+      keywords: (post.tags || []).join(", "),
+    });
+  } else {
+    const stale = typeof document !== "undefined" && document.getElementById("ld-blogposting");
+    if (stale) stale.remove();
+  }
 }
 
 Object.assign(window, {
