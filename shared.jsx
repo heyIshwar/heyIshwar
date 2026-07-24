@@ -60,6 +60,16 @@ const WORK = [
 
 const PROJECTS = [
   {
+    name: "maccy-pet",
+    sub: "macOS desktop pet + task list above its head",
+    desc:
+      "Transparent always-on-top Neko-style pet (Tauri). Click to poke, double-click for tasks. Skins via Codex atlas. Data lives in Application Support — same list for pnpm dev and the installed app.",
+    repo: "heyIshwar/maccy-pet",
+    url: "https://github.com/heyIshwar/maccy-pet",
+    stack: "Tauri · Rust · Vite",
+    featured: true,
+  },
+  {
     name: "macos-folder-sort",
     sub: "LaunchAgent file sorter — no Hazel, no AI",
     desc:
@@ -139,6 +149,17 @@ const PROJECTS = [
 ];
 
 const POSTS = [
+  {
+    slug: "maccy-pet",
+    file: "maccy-pet.md",
+    title: "maccy-pet: Desktop Pet That Holds Your Tasks",
+    sub: "Always-on-top Neko for macOS — poke it, open tasks, same data in App Support",
+    date: "2026-07-24",
+    read: "5 min",
+    tags: ["macos", "tauri", "open-source"],
+    url: "https://ishwar.dev/#/blog/maccy-pet.md",
+    featured: true,
+  },
   {
     slug: "macos-folder-sort",
     file: "folder-sort.md",

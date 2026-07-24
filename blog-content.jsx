@@ -1,6 +1,58 @@
 // Auto-generated blog HTML from ishwar.dev — do not hand-edit
 
 const BLOG_CONTENT = {
+  "maccy-pet.md": `<hr/>
+
+<h2>A tiny dragon (or cat) that sits on your desktop and remembers your tasks</h2>
+
+<p>I wanted classic <strong>Neko</strong> energy on modern macOS — transparent, always-on-top, clickable — plus a real local task list that pops above the pet's head. No Electron blob. No cloud todo SaaS.</p>
+
+<p>Open source:<br>👉 <a href="https://github.com/heyIshwar/maccy-pet">https://github.com/heyIshwar/maccy-pet</a></p>
+
+<p>Apple Silicon DMG: <a href="https://github.com/heyIshwar/maccy-pet/releases/tag/v0.1.2">v0.1.2 release</a></p>
+
+<hr/>
+
+<h2>TL;DR 🧰</h2>
+
+<ul>
+<li>Tauri v2 + Vite — transparent undecorated window, shrink-wrapped to content</li>
+<li>Single-click poke · double/right-click → <strong>tasks</strong> panel · drag to move</li>
+<li>Codex atlas skins (dragon, monkey, …) + classic oneko pixels + HQ frames</li>
+<li>Todos + Jira settings live in <code>~/Library/Application Support/com.ishwar.maccypet/</code></li>
+<li><code>pnpm tauri dev</code> and the installed <code>.app</code> share that same folder</li>
+</ul>
+
+<hr/>
+
+<h2>😤 Why “local” was lying to me</h2>
+
+<p>After renaming the project from <code>neko-tick</code> → <code>maccy-pet</code>, the bundle id changed. macOS put a fresh starter list under the new id while my real tasks sat in the old folder. Running from <code>pnpm</code> vs Applications felt like two different apps — because they were reading two different Application Support paths.</p>
+
+<pre><code># canonical (now)
+~/Library/Application Support/com.ishwar.maccypet/todos.json
+~/Library/Application Support/com.ishwar.maccypet/settings.json
+
+# legacy (auto-migrated on launch if current list is still the factory starter)
+~/Library/Application Support/com.ishwar.nekotick/
+</code></pre>
+
+<hr/>
+
+<h2>🐛 Legs on top of the popup</h2>
+
+<p>Codex pets are a spritesheet. The alert/wave pose used the wrong scale (<code>120 / cellH</code> + fake 11 rows), so the UV window started in the <em>previous</em> row — feet floating above the dragon's head the moment the tasks panel opened.</p>
+
+<p>Fix: display scale <code>120 / 192</code> (box is 120×130) and real atlas row count. Wave pose lines up on cell boundaries again.</p>
+
+<hr/>
+
+<h2>Ship it</h2>
+
+<p>Repo: <a href="https://github.com/heyIshwar/maccy-pet">https://github.com/heyIshwar/maccy-pet</a><br>
+Release: <a href="https://github.com/heyIshwar/maccy-pet/releases/tag/v0.1.2">v0.1.2</a><br>
+Stack: Tauri · Rust · Vite · MIT</p>
+`,
   "folder-sort.md": `<hr/>
 
 <h2>Desktop full of screenshots. Downloads full of chaos. Fix once.</h2>
