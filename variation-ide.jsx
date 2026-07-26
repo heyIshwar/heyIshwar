@@ -556,6 +556,15 @@ function VariationIDE() {
 
   React.useEffect(() => {
     updatePageSeo(active);
+    if (typeof window.gtag === "function") {
+      const page_path =
+        window.location.pathname + window.location.search + window.location.hash;
+      window.gtag("event", "page_view", {
+        page_path,
+        page_title: document.title,
+        page_location: window.location.href,
+      });
+    }
   }, [active]);
 
   React.useEffect(() => {
