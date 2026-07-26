@@ -25,6 +25,20 @@ const BLOG_CONTENT = {
 
 <hr/>
 
+<h2>🔑 Key learnings</h2>
+
+<figure><table>
+<thead><tr><th>Layer</th><th>Learning</th></tr></thead>
+<tbody>
+<tr><td><strong>DPDP</strong></td><td>Personal data in a prompt that hits an overseas LLM/API is a transfer problem — notice, subprocessors, and government orders matter more than the region sticker on your app server.</td></tr>
+<tr><td><strong>CERT-In 6-hour rule</strong></td><td>The box that calls the model still needs incident reporting, ICT logs, and NIC/NPL time sync. Inference abroad does not excuse a blind India control plane.</td></tr>
+<tr><td><strong>IT Act / IT Rules</strong></td><td>Synthetic-content duties are tightening for intermediaries in scope. AI outputs are regulated content, not free exhaust.</td></tr>
+<tr><td><strong>Global LLM reality</strong></td><td>Mumbai hosting ≠ Mumbai inference. Frontier SKUs often live on <code>global</code> / US–EU paths (<strong>OpenRouter</strong>, Vertex global). <strong>Sarvam AI</strong> and in-region flash-class fill residency — not always quality.</td></tr>
+</tbody>
+</table></figure>
+
+<hr/>
+
 <h2>📚 Internet study — the cyber-law stack around inference</h2>
 
 <p>India is not waiting for a single “AI Act” before regulating model use. MeitY’s direction (including the India AI Governance Guidelines work and earlier generative-AI advisories) leans on <em>existing</em> statutes first — IT Act, DPDP, criminal law, sector rules — then fills gaps with rules and advisories. For anyone shipping inference into real workflows, four layers show up again and again.</p>

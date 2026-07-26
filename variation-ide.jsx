@@ -1547,16 +1547,41 @@ function BlogIndexDoc({ onNav }) {
           <div
             key={p.slug}
             onClick={() => onNav(`blog/${p.file}`)}
-            style={{ padding: "20px 0", borderTop: "1px solid var(--border)", cursor: "pointer" }}
+            style={{
+              padding: "20px 0",
+              borderTop: "1px solid var(--border)",
+              cursor: "pointer",
+              display: "flex",
+              gap: 16,
+              alignItems: "flex-start",
+            }}
             className="readme-card"
           >
-            <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
-              {p.date} · {p.read} · {p.tags.join(", ")}
+            {p.image ? (
+              <img
+                src={p.image}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style={{
+                  width: 120,
+                  height: 72,
+                  objectFit: "cover",
+                  borderRadius: 6,
+                  border: "1px solid var(--border)",
+                  flexShrink: 0,
+                }}
+              />
+            ) : null}
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>
+                {p.date} · {p.read} · {p.tags.join(", ")}
+              </div>
+              <div style={{ fontSize: 20, marginTop: 8 }}>
+                {p.title} {p.featured && <Tag accent>featured</Tag>}
+              </div>
+              <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>{p.sub}</div>
             </div>
-            <div style={{ fontSize: 20, marginTop: 8 }}>
-              {p.title} {p.featured && <Tag accent>featured</Tag>}
-            </div>
-            <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>{p.sub}</div>
           </div>
         ))}
         <div style={{ borderTop: "1px solid var(--border)" }} />
@@ -1587,6 +1612,23 @@ function BlogPostDoc({ post }) {
       >
         {post.sub}
       </div>
+      {post.image ? (
+        <figure style={{ margin: "28px 0 0", width: "100%" }}>
+          <img
+            src={post.image}
+            alt={post.title}
+            loading="eager"
+            decoding="async"
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+            }}
+          />
+        </figure>
+      ) : null}
       {html ? (
         <div
           className="blog-prose"

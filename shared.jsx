@@ -158,6 +158,7 @@ const POSTS = [
     read: "11 min",
     tags: ["india", "ai", "cyber-law", "dpdp"],
     url: "https://ishwar.dev/#/blog/inference-cyber-laws-india.md",
+    image: "assets/images/blog/inference-cyber-laws-india.jpg",
     featured: true,
   },
   {
@@ -508,8 +509,8 @@ function upsertJsonLd(id, payload) {
 function updatePageSeo(route) {
   const seo = getRouteSeo(route);
   const pageUrl = routeToPublicUrl(route);
-  const image = absoluteAsset(SITE.headshot);
   const post = POSTS.find((p) => `blog/${p.file}` === route);
+  const image = absoluteAsset(post?.image || SITE.headshot);
   const isArticle = Boolean(post) || route.startsWith("blog/");
 
   document.title = `${seo.title} | ${SITE.domain}`;
