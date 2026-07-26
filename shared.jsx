@@ -150,6 +150,17 @@ const PROJECTS = [
 
 const POSTS = [
   {
+    slug: "not-found-mumbai",
+    file: "not-found-mumbai.md",
+    title: "NOT_FOUND in Mumbai",
+    sub: "DPDP + CERT-In want data home. Frontier LLMs still answer from abroad.",
+    date: "2026-07-26",
+    read: "8 min",
+    tags: ["india", "ai", "compliance", "dpdp"],
+    url: "https://ishwar.dev/#/blog/not-found-mumbai.md",
+    featured: true,
+  },
+  {
     slug: "maccy-pet",
     file: "maccy-pet.md",
     title: "maccy-pet: Desktop Pet That Holds Your Tasks",

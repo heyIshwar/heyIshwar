@@ -1,6 +1,135 @@
 // Auto-generated blog HTML from ishwar.dev — do not hand-edit
 
 const BLOG_CONTENT = {
+  "not-found-mumbai.md": `<hr/>
+
+<h2>We asked Mumbai for a frontier model. The endpoint said NOT_FOUND.</h2>
+
+<p>I am building an India-hosted SaaS that has to take <strong>DPDP Act 2023</strong> and <strong>CERT-In Directions</strong> seriously — not as slide-deck vibes, as ops. Compute is in <code>ap-south-1</code>. NTP points at NIC. Incident clocks are six hours. Privacy + subprocessor pages are public. Then you get to the awkward part: the <em>best</em> models you actually want to call still live somewhere else.</p>
+
+<p>This is the field note from the bake-off. Not a legal opinion. Not “CERT-In certified” cosplay. Just what the APIs returned when we tried to keep prompts in India.</p>
+
+<p>Public surfaces:<br>👉 <a href="https://bitsmith.tech/privacy">https://bitsmith.tech/privacy</a><br>👉 <a href="https://bitsmith.tech/subprocessors">https://bitsmith.tech/subprocessors</a></p>
+
+<hr/>
+
+<h2>TL;DR 🧰</h2>
+
+<ul>
+<li>Rack can be Indian. Frontier model often is not.</li>
+<li>Vertex <code>asia-south1</code> (Mumbai) serves <strong>one</strong> Gemini today: <code>gemini-2.5-flash</code>. Our incumbent <code>gemini-3.1-flash-lite</code> → <code>NOT_FOUND</code>. Delhi (<code>asia-south2</code>) serves <strong>zero</strong> Gemini.</li>
+<li>OpenRouter cannot be pinned to India — region suffixes are US/EU; our path still hits <code>google-vertex/global</code>.</li>
+<li>Sarvam (India-resident) on starter tier: <code>sarvam-30b</code> = 0% usable (reasoning ate the whole token budget); <code>sarvam-105b</code> works but ~19× slower and weaker on the fields that matter.</li>
+<li>Decision: <strong>migration parked</strong>. Reopen when <code>gemini-3.x</code> lands in Mumbai, or a paid Sarvam tier lifts the cap. DPIA carries the cross-border risk in the open.</li>
+</ul>
+
+<hr/>
+
+<h2>😤 The compliance story nobody markets</h2>
+
+<p>India’s privacy law is the <strong>Digital Personal Data Protection Act, 2023</strong> (DPDP — people say DPDT in chat; statute acronym is DPDP). CERT-In’s 28.04.2022 Directions still own the security-ops clock: POC, 6-hour incident report, NIC/NPL time sync, ICT logs kept long enough to be useful.</p>
+
+<p>For a product that touches sensitive operational text, “just call whatever OpenRouter has this week” stops being a vibe and becomes a transfer decision. You either:</p>
+
+<ol>
+<li>keep inference in India and accept whatever models actually run there, or</li>
+<li>route abroad, document the risk, and be honest on the subprocessor page.</li>
+</ol>
+
+<p>We tried (1). The market answered with empty shelves.</p>
+
+<hr/>
+
+<h2>🧪 The bake-off (same prompts, same JSON schema)</h2>
+
+<p>12 stratified smoke cases on the India-hosted relay box. No case dump copied off-box. Numbers measure agreement with the incumbent’s stored parse — smoke, not a 250-case gospel. Still enough to kill the fantasy.</p>
+
+<pre><code>| model                         | data in India | schema-valid | p50 latency | notes |
+|-------------------------------|---------------|--------------|-------------|-------|
+| gemini-3.1-flash-lite (OR→global) | No         | 100%         | 1.7s        | incumbent |
+| gemini-2.5-flash (Vertex BOM) | Yes           | 100%         | 6.5s        | only Gemini in Mumbai |
+| sarvam-105b                   | Yes           | 91.7%        | 31.7s       | weak on tower/operator fields |
+| sarvam-30b                    | Yes           | 0%           | 20.2s       | 12/12 truncated — reasoning ate budget |
+</code></pre>
+
+<p>The painful fields for the India-resident options were exactly the ones humans act on: operator type, cell-tower address, CGI / cell IDs. Pretty JSON that lies is worse than a slow honest parse.</p>
+
+<hr/>
+
+<h2>🇮🇳 Sarvam: we tried. Starter tier said no.</h2>
+
+<p>Homegrown. India-resident. The pitch writes itself. The starter tier does not.</p>
+
+<ul>
+<li>Sarvam models emit a long <strong>reasoning trace before content</strong>.</li>
+<li>Default <code>max_tokens</code> 2048 → content came back <code>null</code>.</li>
+<li>Raise it → hard wall: starter cap is <strong>4096</strong> for <code>sarvam-30b</code>.</li>
+<li>At the ceiling: <strong>12/12 still truncated</strong>. <code>reasoning_effort: low</code> and “thinking off” flags were accepted and ignored.</li>
+</ul>
+
+<p><code>sarvam-105b</code> could finish, but ~19× the incumbent’s latency and materially worse field accuracy. Portability bugs fell out of the harness too — e.g. <code>json_schema.name</code> is mandatory on Sarvam (OpenAI spec) while some OpenRouter paths let you omit it. Real code debt, not eval theatre.</p>
+
+<p>Verdict: <strong>not yet</strong>, not never. Ask Sarvam what a paid tier does to <code>max_tokens</code> and whether reasoning can actually be disabled. Then retest.</p>
+
+<hr/>
+
+<h2>🌏 Vertex Mumbai: endpoint exists. Generation does not.</h2>
+
+<p>This is the headline most infra decks skip.</p>
+
+<p><strong>Model availability is the constraint, not the region string.</strong></p>
+
+<ul>
+<li><code>asia-south1</code> (Mumbai): only <code>gemini-2.5-flash</code> among the Gemini lineup we care about.</li>
+<li>Incumbent <code>gemini-3.1-flash-lite</code> → <code>NOT_FOUND</code>. Same for several 2.5 / 3.x cousins we probed.</li>
+<li><code>asia-south2</code> (Delhi): <strong>no Gemini at all</strong>.</li>
+<li>Singapore matches Mumbai’s thin shelf — and it is outside India anyway.</li>
+</ul>
+
+<p>Operationally, Mumbai 2.5-flash is fine for an async pipeline: schema-valid, no truncation, fewer tokens than the global 3.1 path. Accuracy is the tax — operator/tower fields drop hard vs the incumbent. Bonus landmine: some nulls came back as the <em>string</em> <code>"null"</code>, which a loose schema happily accepts and silently poisons downstream.</p>
+
+<p>So you can have residency <em>or</em> the model you already trust in prod. Not both. Not today.</p>
+
+<hr/>
+
+<h2>🧭 OpenRouter: still a US hallway</h2>
+
+<p>Even when the upstream model is “Google,” the router is not an India pin. Region-suffixed slugs we saw were US/EU. Our production path still exposes <code>google-vertex/global</code>. That means OpenRouter remains a cross-border intermediary whether or not Google has a Mumbai SKU you like.</p>
+
+<p>For DPDP transfer honesty, that line stays on the subprocessor register as a pending / open risk until a real India path wins on eval — or until you explicitly accept residual risk in the DPIA and say so out loud.</p>
+
+<hr/>
+
+<h2>🛑 What we are not claiming</h2>
+
+<ul>
+<li>Not “CERT-In certified / approved.” That language is fake until an empanelled auditor exists for your claim — and even then, ops evidence is not a seal.</li>
+<li>Not “fully DPDP-done because Mumbai is in the region picker.”</li>
+<li>Not “Sarvam bad.” Starter-tier token physics + reasoning traces broke <em>our</em> extraction prompts.</li>
+</ul>
+
+<p>The unlocked honest sentence looks more like: <em>operated in line with CERT-In Directions expectations</em> — after POC, 6h playbook, NIC time, log retention, and evidence are real. Sales annex ≠ roadmap.md.</p>
+
+<hr/>
+
+<h2>📌 Parked — reopen conditions</h2>
+
+<ol>
+<li><code>gemini-3.x</code> (or our incumbent class) actually serves from <code>asia-south1</code>.</li>
+<li>Sarvam paid tier lifts <code>max_tokens</code> / disables forced reasoning enough to emit content.</li>
+<li>Full 250-case labelled eval, not a 12-case smoke.</li>
+</ol>
+
+<p>Until then: keep the India box, finish the boring CERT-In/DPDP ops work, publish subprocessors without cosplay seals, and carry OpenRouter as an open cross-border line. Empty endpoints are not a vibe check. They are a product constraint.</p>
+
+<hr/>
+
+<h2>Ship it</h2>
+
+<p>Privacy: <a href="https://bitsmith.tech/privacy">bitsmith.tech/privacy</a><br>
+Subprocessors: <a href="https://bitsmith.tech/subprocessors">bitsmith.tech/subprocessors</a><br>
+Stack of the week: Vertex regional endpoints · Sarvam API · OpenRouter · DPDP / CERT-In ops discipline</p>
+`,
   "maccy-pet.md": `<hr/>
 
 <h2>A tiny dragon (or cat) that sits on your desktop and remembers your tasks</h2>
