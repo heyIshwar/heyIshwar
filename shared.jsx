@@ -150,14 +150,14 @@ const PROJECTS = [
 
 const POSTS = [
   {
-    slug: "not-found-mumbai",
-    file: "not-found-mumbai.md",
-    title: "NOT_FOUND in Mumbai",
-    sub: "DPDP + CERT-In want data home. Frontier LLMs still answer from abroad.",
+    slug: "inference-cyber-laws-india",
+    file: "inference-cyber-laws-india.md",
+    title: "Inference Meets Cyber Laws in India",
+    sub: "DPDP, CERT-In, IT Rules — and why frontier models still miss Mumbai",
     date: "2026-07-26",
-    read: "8 min",
-    tags: ["india", "ai", "compliance", "dpdp"],
-    url: "https://ishwar.dev/#/blog/not-found-mumbai.md",
+    read: "11 min",
+    tags: ["india", "ai", "cyber-law", "dpdp"],
+    url: "https://ishwar.dev/#/blog/inference-cyber-laws-india.md",
     featured: true,
   },
   {

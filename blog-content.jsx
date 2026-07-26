@@ -1,134 +1,168 @@
 // Auto-generated blog HTML from ishwar.dev — do not hand-edit
 
 const BLOG_CONTENT = {
-  "not-found-mumbai.md": `<hr/>
+  "inference-cyber-laws-india.md": `<hr/>
 
-<h2>We asked Mumbai for a frontier model. The endpoint said NOT_FOUND.</h2>
+<h2>Inference Meets Cyber Laws in India — when the model is the transfer</h2>
 
-<p>I am building an India-hosted SaaS that has to take <strong>DPDP Act 2023</strong> and <strong>CERT-In Directions</strong> seriously — not as slide-deck vibes, as ops. Compute is in <code>ap-south-1</code>. NTP points at NIC. Incident clocks are six hours. Privacy + subprocessor pages are public. Then you get to the awkward part: the <em>best</em> models you actually want to call still live somewhere else.</p>
+<p>I am working on a product that deals with automation and intelligence for law agencies in government. That kind of system is designed around India-region hosting, clear subprocessors, and the cyber-law stack that actually applies to AI here: <strong>DPDP</strong>, <strong>CERT-In</strong>, the <strong>IT Act / IT Rules</strong>, and MeitY’s AI guidance. This post is a builder’s study of that stack — plus the market fact decks keep skipping.</p>
 
-<p>This is the field note from the bake-off. Not a legal opinion. Not “CERT-In certified” cosplay. Just what the APIs returned when we tried to keep prompts in India.</p>
+<p>You can place the application in Mumbai. You often cannot place the <em>frontier model</em> there. When prompts leave India for inference, India’s cyber laws care — even if your cloud region string says India.</p>
 
-<p>Public surfaces:<br>👉 <a href="https://bitsmith.tech/privacy">https://bitsmith.tech/privacy</a><br>👉 <a href="https://bitsmith.tech/subprocessors">https://bitsmith.tech/subprocessors</a></p>
+<p><em>Not legal advice.</em> Read the primary texts; counsel for your facts. Sources at the end.</p>
 
 <hr/>
 
 <h2>TL;DR 🧰</h2>
 
 <ul>
-<li>Rack can be Indian. Frontier model often is not.</li>
-<li>Vertex <code>asia-south1</code> (Mumbai) serves <strong>one</strong> Gemini today: <code>gemini-2.5-flash</code>. Our incumbent <code>gemini-3.1-flash-lite</code> → <code>NOT_FOUND</code>. Delhi (<code>asia-south2</code>) serves <strong>zero</strong> Gemini.</li>
-<li>OpenRouter cannot be pinned to India — region suffixes are US/EU; our path still hits <code>google-vertex/global</code>.</li>
-<li>Sarvam (India-resident) on starter tier: <code>sarvam-30b</code> = 0% usable (reasoning ate the whole token budget); <code>sarvam-105b</code> works but ~19× slower and weaker on the fields that matter.</li>
-<li>Decision: <strong>migration parked</strong>. Reopen when <code>gemini-3.x</code> lands in Mumbai, or a paid Sarvam tier lifts the cap. DPIA carries the cross-border risk in the open.</li>
+<li>In India, “AI compliance” is not one Act — it is DPDP + CERT-In + IT Act/Rules + sector overlays, read together.</li>
+<li>DPDP does <strong>not</strong> blanket-ban overseas inference; it uses a government negative-list / order model for transfers — so documentation and notice still matter.</li>
+<li>CERT-In still owns the cyber-ops clock: incidents, ICT logs, time sync — separate from “which Gemini SKU runs in Mumbai.”</li>
+<li>Cloud region ≠ model shelf. Mumbai can exist in the dropdown while frontier model IDs return <code>NOT_FOUND</code>.</li>
+<li>India-native inference is strategically important; for hard structured extraction it still trades latency and field quality against global leaders.</li>
 </ul>
 
 <hr/>
 
-<h2>😤 The compliance story nobody markets</h2>
+<h2>📚 Internet study — the cyber-law stack around inference</h2>
 
-<p>India’s privacy law is the <strong>Digital Personal Data Protection Act, 2023</strong> (DPDP — people say DPDT in chat; statute acronym is DPDP). CERT-In’s 28.04.2022 Directions still own the security-ops clock: POC, 6-hour incident report, NIC/NPL time sync, ICT logs kept long enough to be useful.</p>
+<p>India is not waiting for a single “AI Act” before regulating model use. MeitY’s direction (including the India AI Governance Guidelines work and earlier generative-AI advisories) leans on <em>existing</em> statutes first — IT Act, DPDP, criminal law, sector rules — then fills gaps with rules and advisories. For anyone shipping inference into real workflows, four layers show up again and again.</p>
 
-<p>For a product that touches sensitive operational text, “just call whatever OpenRouter has this week” stops being a vibe and becomes a transfer decision. You either:</p>
+<figure><table>
+<thead><tr><th>Layer</th><th>What it is</th><th>Why inference people care</th></tr></thead>
+<tbody>
+<tr><td>DPDP Act 2023 + Rules</td><td>Personal data fiduciary/processor duties; cross-border via §16 / Rule 15</td><td>Overseas model APIs (e.g. via <strong>OpenRouter</strong>) can be a personal-data transfer</td></tr>
+<tr><td>CERT-In Directions (28.04.2022)</td><td>Cyber incident reporting, ICT logs, time sync under IT Act §70B</td><td>Security posture of the AI-enabled service, not the model brand</td></tr>
+<tr><td>IT Act + IT Rules</td><td>Intermediary / platform due diligence; synthetic-content rules evolving</td><td>How AI outputs are labelled, moderated, and attributed</td></tr>
+<tr><td>Sector / LEA overlays</td><td>Tender language, residency expectations, investigation exemptions</td><td>“India-hosted” claims get read against real architecture</td></tr>
+</tbody>
+</table></figure>
+
+<h3>1) DPDP — transfer is the plot, not a slogan</h3>
+
+<p>The <strong>Digital Personal Data Protection Act, 2023</strong> (people say “DPDT” in chat; statute acronym is <strong>DPDP</strong>) plus the <strong>DPDP Rules, 2025</strong> operationalise consent, notice, fiduciary/processor duties, and cross-border movement.</p>
+
+<ul>
+<li><strong>Section 16 / Rule 15 shape:</strong> personal data may move outside India <em>except</em> where the Central Government restricts by general or special order — a <strong>negative-list</strong> model, not GDPR-style adequacy theatre by default.</li>
+<li><strong>No universal localisation mandate</strong> in the base Act — but the Union can tighten by order, Significant Data Fiduciaries can face extra limits, and <strong>sectoral</strong> residency rules (finance etc.) still stack on top.</li>
+<li><strong>Practical inference point:</strong> sending personal data to an overseas LLM/API for inference is widely treated in practitioner guidance as a <strong>transfer</strong>. Vague “we may use AI globally” notice language is weak; name destinations/categories and purposes where the Act’s notice duties apply.</li>
+<li><strong>Processor chain:</strong> if a router or cloud AI vendor sits in the middle, written terms and subprocessor honesty still matter under fiduciary→processor duties.</li>
+</ul>
+
+<p>So DPDP does not say “Mumbai Vertex or jail.” It says: know whether tokens carry personal data, know where they go, and be ready when MeitY orders change the map.</p>
+
+<h3>2) CERT-In — cyber laws for the box that calls the model</h3>
+
+<p>The <strong>CERT-In Directions dated 28 April 2022</strong> (IT Act §70B) hit service providers, intermediaries, data centres, body corporates, and government organisations. For AI products, this layer is about the <em>system that hosts the workflow</em>, not the marketing name of the LLM:</p>
+
+<ul>
+<li>Enable and retain ICT logs on a rolling <strong>180-day</strong> window, with India-jurisdiction expectations in the Directions (FAQs have been debated — design for producible India-accessible evidence).</li>
+<li>Report covered cyber incidents to CERT-In <strong>within six hours</strong> of noticing (Directions text; Annexure I categories).</li>
+<li>Sync ICT clocks to NIC/NPL NTP (or sources that do not deviate from them) for India-side systems.</li>
+</ul>
+
+<p>Calling a model in Virginia does not excuse a blind Mumbai relay with no incident playbook. Conversely, perfect CERT-In ops does not magically make a US inference path “India-resident.”</p>
+
+<h3>3) IT Act / IT Rules — AI outputs are regulated content too</h3>
+
+<p>MeitY’s generative-AI advisories (2023–2024) already pushed intermediaries toward unlawful-content controls, bias/election integrity caution, and labelling fallibility of under-tested systems. The IT Rules amendments on <strong>synthetically generated information</strong> (in force from Feb 2026) tighten labelling / provenance duties mainly for intermediaries in scope. Even if your product is not a social feed, the direction of travel is clear: AI outputs are not law-free exhaust.</p>
+
+<p>India AI Governance material also keeps repeating a theme: prefer applying <strong>existing law across the AI value chain</strong> over waiting for a greenfield AI statute. Builders should design for that pluralism.</p>
+
+<h3>4) What this means for “inference in India”</h3>
+
+<p>Two architectures stay clean on paper:</p>
 
 <ol>
-<li>keep inference in India and accept whatever models actually run there, or</li>
-<li>route abroad, document the risk, and be honest on the subprocessor page.</li>
+<li><strong>India-resident inference</strong> — prompts/completions stay in-country; accept the models that actually serve here.</li>
+<li><strong>Documented cross-border inference</strong> — personal data may leave under DPDP’s permissive-default/order model; name it, contract it, publish subprocessors; keep CERT-In ops on the India control plane.</li>
 </ol>
 
-<p>We tried (1). The market answered with empty shelves.</p>
+<p>Architecture (1) is what every residency slide wants. The <strong>model catalogue</strong> decides whether the slide is honest.</p>
 
 <hr/>
 
-<h2>🧪 The bake-off (same prompts, same JSON schema)</h2>
+<h2>😤 Why this matters for gov / LEA systems</h2>
 
-<p>12 stratified smoke cases on the India-hosted relay box. No case dump copied off-box. Numbers measure agreement with the incumbent’s stored parse — smoke, not a 250-case gospel. Still enough to kill the fantasy.</p>
-
-<pre><code>| model                         | data in India | schema-valid | p50 latency | notes |
-|-------------------------------|---------------|--------------|-------------|-------|
-| gemini-3.1-flash-lite (OR→global) | No         | 100%         | 1.7s        | incumbent |
-| gemini-2.5-flash (Vertex BOM) | Yes           | 100%         | 6.5s        | only Gemini in Mumbai |
-| sarvam-105b                   | Yes           | 91.7%        | 31.7s       | weak on tower/operator fields |
-| sarvam-30b                    | Yes           | 0%           | 20.2s       | 12/12 truncated — reasoning ate budget |
-</code></pre>
-
-<p>The painful fields for the India-resident options were exactly the ones humans act on: operator type, cell-tower address, CGI / cell IDs. Pretty JSON that lies is worse than a slow honest parse.</p>
+<p>Automation and intelligence products in this space sit on operational workflows — structured parsing, routing, assistant-style help. Model choice is accuracy and price, yes. Under this stack it is also <em>where the tokens go</em>, how incidents are handled, and what you are willing to claim in a notice or annex.</p>
 
 <hr/>
 
-<h2>🇮🇳 Sarvam: we tried. Starter tier said no.</h2>
+<h2>🧪 What the catalogue looks like</h2>
 
-<p>Homegrown. India-resident. The pitch writes itself. The starter tier does not.</p>
+<p>Same structured-extraction job. Same schema shape. Called from India-region infra. Matrix = market shape — including paths through <strong>OpenRouter</strong>, Vertex Mumbai, and <strong>Sarvam AI</strong>.</p>
+
+<figure><table>
+<thead><tr><th>Path</th><th>Data in India</th><th>Structured JSON</th><th>Relative speed</th><th>Field quality on ops slots</th></tr></thead>
+<tbody>
+<tr><td>Frontier Gemini via <strong>OpenRouter</strong> (global upstream)</td><td>No</td><td>strong</td><td>fastest</td><td>strongest today</td></tr>
+<tr><td>Flash-class Gemini @ Mumbai Vertex</td><td>Yes</td><td>strong</td><td>slower</td><td>weaker on key ops fields</td></tr>
+<tr><td><strong>Sarvam AI</strong> — larger model</td><td>Yes</td><td>good</td><td>much slower</td><td>weaker on key ops fields</td></tr>
+<tr><td><strong>Sarvam AI</strong> — smaller model</td><td>Yes</td><td>weak / empty</td><td>slow</td><td>reasoning crowding output</td></tr>
+</tbody>
+</table></figure>
+
+<p>Residency-friendly rows still lose ground on operator / location-style fields humans act on. Valid JSON that is wrong is worse than a slower correct parse.</p>
+
+<hr/>
+
+<h2>🇮🇳 Sarvam AI — India-native inference</h2>
+
+<p><strong>Sarvam AI</strong> matters because India-resident inference is the point of architecture (1). On demanding structured-extraction prompts, long reasoning traces can crowd out the answer; models that finish still often pay in latency and field accuracy versus the global frontier.</p>
+
+<p>That is not “India cannot do AI.” It is “the residency-friendly shelf and the frontier shelf are not the same product.” When they converge, cyber-law architecture (1) gets much easier to sell without footnotes.</p>
+
+<hr/>
+
+<h2>🌏 Region string ≠ model shelf</h2>
+
+<p><strong>Availability is the constraint — not whether Mumbai exists in the dropdown.</strong></p>
 
 <ul>
-<li>Sarvam models emit a long <strong>reasoning trace before content</strong>.</li>
-<li>Default <code>max_tokens</code> 2048 → content came back <code>null</code>.</li>
-<li>Raise it → hard wall: starter cap is <strong>4096</strong> for <code>sarvam-30b</code>.</li>
-<li>At the ceiling: <strong>12/12 still truncated</strong>. <code>reasoning_effort: low</code> and “thinking off” flags were accepted and ignored.</li>
+<li>Mumbai (<code>asia-south1</code>) can host some Gemini SKUs (e.g. flash-class) and still miss others that only expose <code>global</code> / US–EU multi-region endpoints — <code>NOT_FOUND</code> is a catalogue answer, not a networking bug.</li>
+<li>Not every India region carries the same model shelf; always verify the model ID in-region.</li>
+<li>A nearby non-India region does not repair a residency narrative under customer or sector expectations.</li>
 </ul>
-
-<p><code>sarvam-105b</code> could finish, but ~19× the incumbent’s latency and materially worse field accuracy. Portability bugs fell out of the harness too — e.g. <code>json_schema.name</code> is mandatory on Sarvam (OpenAI spec) while some OpenRouter paths let you omit it. Real code debt, not eval theatre.</p>
-
-<p>Verdict: <strong>not yet</strong>, not never. Ask Sarvam what a paid tier does to <code>max_tokens</code> and whether reasoning can actually be disabled. Then retest.</p>
 
 <hr/>
 
-<h2>🌏 Vertex Mumbai: endpoint exists. Generation does not.</h2>
+<h2>🧭 OpenRouter and the hallway problem</h2>
 
-<p>This is the headline most infra decks skip.</p>
+<p><strong>OpenRouter</strong> and similar multi-model routers are convenient. Convenience is not residency. If every selectable pin sits in US/EU — and the upstream still resolves through a global Vertex path — the router remains a hallway abroad for DPDP transfer analysis, even when the model badge says Google. Design for that, or do not claim India-only inference.</p>
 
-<p><strong>Model availability is the constraint, not the region string.</strong></p>
+<hr/>
+
+<h2>Remedies / alternatives 🛠️</h2>
 
 <ul>
-<li><code>asia-south1</code> (Mumbai): only <code>gemini-2.5-flash</code> among the Gemini lineup we care about.</li>
-<li>Incumbent <code>gemini-3.1-flash-lite</code> → <code>NOT_FOUND</code>. Same for several 2.5 / 3.x cousins we probed.</li>
-<li><code>asia-south2</code> (Delhi): <strong>no Gemini at all</strong>.</li>
-<li>Singapore matches Mumbai’s thin shelf — and it is outside India anyway.</li>
+<li><strong>Map tokens to law layers</strong> — personal data in the prompt? → DPDP transfer/notice analysis. Host compromised? → CERT-In. Synthetic outputs at scale? → IT Rules / labelling trajectory.</li>
+<li><strong>Design for two lanes</strong> — India-resident inference where the catalogue supports it; documented cross-border paths where it does not. Publish subprocessors either way.</li>
+<li><strong>Treat region pickers as catalogues</strong> — verify model IDs in-region before promising residency in a tender or customer deck.</li>
+<li><strong>Keep India-native options on the shortlist</strong> — including <strong>Sarvam AI</strong>; structured extraction is a harsher test than chat demos.</li>
+<li><strong>Treat OpenRouter as a transfer path unless proven otherwise</strong> — name it in subprocessors when prompts can leave India.</li>
+<li><strong>Prefer honest claim language</strong> — “India-hosted application,” “in-region inference where available,” “operated in line with CERT-In Directions expectations” after evidence — never “CERT-In certified” theatre or “DPDP-complete because region = Mumbai.”</li>
+<li><strong>What the market still owes builders</strong> — frontier-class models on India endpoints, and India-native stacks that win on residency <em>and</em> operational field quality.</li>
 </ul>
 
-<p>Operationally, Mumbai 2.5-flash is fine for an async pipeline: schema-valid, no truncation, fewer tokens than the global 3.1 path. Accuracy is the tax — operator/tower fields drop hard vs the incumbent. Bonus landmine: some nulls came back as the <em>string</em> <code>"null"</code>, which a loose schema happily accepts and silently poisons downstream.</p>
-
-<p>So you can have residency <em>or</em> the model you already trust in prod. Not both. Not today.</p>
+<p>Empty shelves are a product constraint. Louder slides are not a control.</p>
 
 <hr/>
 
-<h2>🧭 OpenRouter: still a US hallway</h2>
-
-<p>Even when the upstream model is “Google,” the router is not an India pin. Region-suffixed slugs we saw were US/EU. Our production path still exposes <code>google-vertex/global</code>. That means OpenRouter remains a cross-border intermediary whether or not Google has a Mumbai SKU you like.</p>
-
-<p>For DPDP transfer honesty, that line stays on the subprocessor register as a pending / open risk until a real India path wins on eval — or until you explicitly accept residual risk in the DPIA and say so out loud.</p>
-
-<hr/>
-
-<h2>🛑 What we are not claiming</h2>
+<h2>Sources / further reading 🔗</h2>
 
 <ul>
-<li>Not “CERT-In certified / approved.” That language is fake until an empanelled auditor exists for your claim — and even then, ops evidence is not a seal.</li>
-<li>Not “fully DPDP-done because Mumbai is in the region picker.”</li>
-<li>Not “Sarvam bad.” Starter-tier token physics + reasoning traces broke <em>our</em> extraction prompts.</li>
+<li>DPDP Act, 2023 — cross-border framing under Section 16; Rules 2025 Rule 15 (practitioner explainers widely summarise the negative-list / government-order model)</li>
+<li>CERT-In Directions under IT Act §70B (28.04.2022) — <a href="https://www.cert-in.org.in/PDF/CERT-In_Directions_70B_28.04.2022.pdf">official PDF</a></li>
+<li>MeitY generative AI advisories (Dec 2023 / Mar 2024) and subsequent IT Rules amendments on synthetically generated information</li>
+<li>India AI Governance Guidelines / MeitY materials — existing-law-first approach across the AI value chain</li>
 </ul>
-
-<p>The unlocked honest sentence looks more like: <em>operated in line with CERT-In Directions expectations</em> — after POC, 6h playbook, NIC time, log retention, and evidence are real. Sales annex ≠ roadmap.md.</p>
-
-<hr/>
-
-<h2>📌 Parked — reopen conditions</h2>
-
-<ol>
-<li><code>gemini-3.x</code> (or our incumbent class) actually serves from <code>asia-south1</code>.</li>
-<li>Sarvam paid tier lifts <code>max_tokens</code> / disables forced reasoning enough to emit content.</li>
-<li>Full 250-case labelled eval, not a 12-case smoke.</li>
-</ol>
-
-<p>Until then: keep the India box, finish the boring CERT-In/DPDP ops work, publish subprocessors without cosplay seals, and carry OpenRouter as an open cross-border line. Empty endpoints are not a vibe check. They are a product constraint.</p>
 
 <hr/>
 
 <h2>Ship it</h2>
 
-<p>Privacy: <a href="https://bitsmith.tech/privacy">bitsmith.tech/privacy</a><br>
-Subprocessors: <a href="https://bitsmith.tech/subprocessors">bitsmith.tech/subprocessors</a><br>
-Stack of the week: Vertex regional endpoints · Sarvam API · OpenRouter · DPDP / CERT-In ops discipline</p>
+<p>Study topic: inference × India’s cyber laws · market catalogue vs residency slides</p>
 `,
   "maccy-pet.md": `<hr/>
 
