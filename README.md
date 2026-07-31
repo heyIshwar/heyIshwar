@@ -49,8 +49,8 @@ Building web apps, RAG pipelines, MCP tooling, and open source.
 
 <div align="center">
 
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=heyIshwar&show_icons=true&hide_border=true&bg_color=0a0a0a&title_color=a3e635&icon_color=a3e635&text_color=e8e8e3&ring_color=a3e635" alt="GitHub stats" />
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=heyIshwar&layout=compact&hide_border=true&bg_color=0a0a0a&title_color=a3e635&text_color=e8e8e3" alt="Top languages" />
+<img height="165" src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=heyIshwar&theme=chartreuse_dark" alt="GitHub stats" />
+<img height="165" src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=heyIshwar&theme=chartreuse_dark" alt="Repos per language" />
 
 ![Profile views](https://komarev.com/ghpvc/?username=heyIshwar&color=a3e635&style=flat-square&label=profile+views)
 
