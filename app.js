@@ -101,28 +101,36 @@ if (h1 && !reduceMotion) {
 
 const io = "IntersectionObserver" in window && !reduceMotion
   ? new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) {
+      (entries) => {
+        // Reveal everything that just came into view one after another, in reading order.
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((x, y) => {
+            const a = x.target.getBoundingClientRect(), b = y.target.getBoundingClientRect();
+            return a.top - b.top || a.left - b.left;
+          });
+        visible.forEach((e, i) => {
+          const step = e.target.classList.contains("sm") ? 55 : 95;
+          e.target.style.setProperty("--d", Math.min(i * step, 900) + "ms");
           e.target.classList.add("in");
-          setTimeout(() => e.target.classList.add("done"), 1300);
+          setTimeout(() => e.target.classList.add("done"), 1300 + i * step);
           io.unobserve(e.target);
-        }
-      }),
+        });
+      },
       { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     )
   : null;
 
 function initReveal() {
   const targets = document.querySelectorAll(
-    ".block > h2, .feature, .pillar, .job, .edu, .repo, .post-row, .more-link, .page .lead, .doc > h2, .doc > p, .doc > ul, .doc > .tags, .note, figure.diagram, .list-h, .post-cover, .prose > *"
+    ".block > h2, .feature, .pillar, .job, .edu, .repo, .post-row, .more-link, .page .lead, .doc > h2, .doc > p, .doc > ul, .doc > .tags, .note, figure.diagram, .list-h, .prose > *, .pillar li, .feature .tag"
   );
   targets.forEach((el) => {
     if (el.dataset.rv) return;
     el.dataset.rv = "1";
     if (!io) return;
     if (!el.matches("figure.diagram")) el.classList.add("reveal");
-    const idx = [...el.parentElement.children].indexOf(el);
-    el.style.setProperty("--d", Math.min(idx, 5) * 70 + "ms");
+    if (el.matches(".pillar li, .feature .tag")) el.classList.add("sm");
     io.observe(el);
   });
 }
@@ -133,7 +141,31 @@ function onScroll() {
   const max = document.documentElement.scrollHeight - innerHeight;
   bar.style.transform = `scaleX(${max > 0 ? Math.min(scrollY / max, 1) : 0})`;
 }
-addEventListener("scroll", onScroll, { passive: true });
+let ticking = false;
+addEventListener("scroll", () => {
+  onScroll();
+  if (ticking || !io) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    // Safety net: anything already scrolled past (fast scroll, anchor jump) must never stay hidden.
+    document.querySelectorAll(".reveal:not(.in)").forEach((el) => {
+      if (el.offsetParent !== null && el.getBoundingClientRect().bottom < 0) {
+        el.classList.add("in", "done");
+        io.unobserve(el);
+      }
+    });
+    ticking = false;
+  });
+}, { passive: true });
 
 initReveal();
 window.addEventListener("hashchange", () => requestAnimationFrame(initReveal));
+
+// Soft spotlight that follows the cursor on the featured card.
+document.querySelectorAll(".feature").forEach((card) => {
+  card.addEventListener("pointermove", (e) => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", e.clientX - r.left + "px");
+    card.style.setProperty("--my", e.clientY - r.top + "px");
+  });
+});

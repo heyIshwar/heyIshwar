@@ -283,6 +283,30 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .reveal, .js .hero .status, .js .hero .lead, .js .hero .facts, .js .hero .actions, .hero h1 .w, figure.diagram .d-node, figure.diagram .d-line { opacity: 1 !important; transform: none !important; }
   }
+
+  /* ---------- motion v2 (subtle) ---------- */
+  @keyframes sweep { to { background-size: 100% 1px; } }
+  @keyframes blur-in { from { opacity: 0; filter: blur(10px); transform: scale(.985); } to { opacity: 1; filter: none; transform: none; } }
+  .nav { animation: view-in .6s ease both; }
+  .reveal.sm { transform: translateY(8px); }
+  .reveal.sm.in { transform: none; }
+  .block > h2 { display: flex; align-items: center; gap: 14px; }
+  .block > h2::after { content: ""; height: 1px; flex: 1; background: var(--border); transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(.2,.7,.2,1) .25s; }
+  .block > h2.in::after { transform: scaleX(1); }
+  .js .hero .lead a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; animation: sweep .9s ease 1.5s forwards; }
+  .feature { position: relative; overflow: hidden; }
+  .feature::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s; background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), var(--accent-soft), transparent 65%); }
+  .feature:hover::before { opacity: 1; }
+  .repo strong::after, .post-title::after { content: " ↗"; display: inline-block; opacity: 0; transform: translate(-4px, 4px); transition: opacity .25s, transform .25s; color: var(--accent); }
+  .post-title::after { content: " →"; transform: translateX(-6px); }
+  .repo:hover strong::after, .post-row:hover .post-title::after { opacity: 1; transform: none; }
+  .post-cover { animation: blur-in .9s ease both; }
+  .pillar li::marker { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) {
+    .block > h2::after { transform: none !important; }
+    .js .hero .lead a { background-size: 100% 1px !important; }
+    .post-cover, .nav { animation: none !important; filter: none !important; }
+  }
 </style>
 </head>
 <body>
