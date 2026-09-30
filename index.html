@@ -240,9 +240,53 @@
     .nav .wrap { justify-content: flex-start; }
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  /* ---------- motion ---------- */
+  #progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 20; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 70%, 100% { box-shadow: 0 0 0 8px transparent; } }
+  @keyframes flow { to { stroke-dashoffset: -16; } }
+  @keyframes view-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .js .hero .status, .js .hero .lead, .js .hero .facts, .js .hero .actions { opacity: 0; animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
+  .js .hero .status { animation-delay: .05s; }
+  .js .hero .lead { animation-delay: .45s; }
+  .js .hero .facts { animation-delay: .58s; }
+  .js .hero .actions { animation-delay: .7s; }
+  .hero h1 .w { display: inline-block; opacity: 0; animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: calc(.12s + var(--i) * 45ms); }
+  .dot { animation: pulse 2.2s ease-out infinite; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }
+  .reveal.in { opacity: 1; transform: none; transition: opacity .65s ease var(--d, 0ms), transform .65s cubic-bezier(.2,.7,.2,1) var(--d, 0ms), border-color .2s, background .2s, box-shadow .25s; }
+  .reveal.done { transition: opacity .3s, transform .25s cubic-bezier(.2,.7,.2,1), border-color .2s, background .2s, box-shadow .25s; }
+  main > div:not([hidden]) { animation: view-in .35s ease; }
+
+  .feature, .btn, .repo, .post-row, .tag { transition: transform .25s cubic-bezier(.2,.7,.2,1), border-color .2s, background .2s, box-shadow .25s; }
+  .feature:hover { transform: translateY(-3px); box-shadow: 0 12px 32px -14px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .feature .more { transition: transform .25s; }
+  .feature:hover .more { transform: translateX(6px); }
+  .btn:hover { transform: translateY(-2px); }
+  .repo:hover, .post-row:hover { transform: translateX(6px); }
+  .tag:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-links a { position: relative; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px; background: var(--accent); transform: scaleX(0); transition: transform .25s; }
+  .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+  /* architecture diagram */
+  .d-line { stroke-dasharray: 4 4; animation: flow 1s linear infinite; }
+  figure.diagram .d-node { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; transition-delay: calc(var(--n) * 90ms); }
+  figure.diagram.in .d-node { opacity: 1; transform: none; }
+  figure.diagram .d-line { opacity: 0; transition: opacity .8s ease .7s; }
+  figure.diagram.in .d-line { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal, .js .hero .status, .js .hero .lead, .js .hero .facts, .js .hero .actions, .hero h1 .w, figure.diagram .d-node, figure.diagram .d-line { opacity: 1 !important; transform: none !important; }
+  }
 </style>
 </head>
 <body>
+<div id="progress" aria-hidden="true"></div>
 
 <header class="nav">
   <div class="wrap">
@@ -425,32 +469,17 @@
     <figure class="diagram">
       <svg viewBox="0 0 720 330" role="img" aria-label="Spear architecture: clients connect to a Node.js relay, which uses MongoDB, an AI assistant layer and observability">
         <text class="d-h" x="20" y="24">CLIENTS</text>
-        <rect class="d-box" x="20" y="36" width="190" height="72" rx="10"/>
-        <text class="d-t" x="36" y="64">Relay console</text><text class="d-s" x="36" y="84">React · MUI · en / mr / hi</text>
-        <rect class="d-box" x="20" y="124" width="190" height="72" rx="10"/>
-        <text class="d-t" x="36" y="152">Officers app</text><text class="d-s" x="36" y="172">Flutter · patrol · geofenced check-in</text>
-        <rect class="d-box" x="20" y="212" width="190" height="72" rx="10"/>
-        <text class="d-t" x="36" y="240">SMS gateway</text><text class="d-s" x="36" y="260">Flutter · dual-SIM · dedup · FCM</text>
+<g class="d-node" style="--n:1"><rect class="d-box" x="20" y="36" width="190" height="72" rx="10"/><text class="d-t" x="36" y="64">Relay console</text><text class="d-s" x="36" y="84">React · MUI · en / mr / hi</text></g>
+<g class="d-node" style="--n:2"><rect class="d-box" x="20" y="124" width="190" height="72" rx="10"/><text class="d-t" x="36" y="152">Officers app</text><text class="d-s" x="36" y="172">Flutter · patrol · geofenced check-in</text></g>
+<g class="d-node" style="--n:3"><rect class="d-box" x="20" y="212" width="190" height="72" rx="10"/><text class="d-t" x="36" y="240">SMS gateway</text><text class="d-s" x="36" y="260">Flutter · dual-SIM · dedup · FCM</text></g>
 
         <text class="d-h" x="270" y="24">CORE</text>
-        <rect class="d-accent" x="270" y="36" width="190" height="248" rx="10"/>
-        <text class="d-t" x="286" y="68">Relay API</text>
-        <text class="d-s" x="286" y="90">Node.js · Express</text>
-        <text class="d-s" x="286" y="108">Socket.IO real-time hub</text>
-        <text class="d-s" x="286" y="136">JWT · multi-tenant</text>
-        <text class="d-s" x="286" y="154">Role &amp; district hierarchy</text>
-        <text class="d-s" x="286" y="172">with feature grants</text>
-        <text class="d-s" x="286" y="200">PM2 cluster · audit logs</text>
-        <text class="d-s" x="286" y="218">Reports · CSV / PDF export</text>
-        <text class="d-s" x="286" y="246">Map intel · CDR analysis</text>
+<g class="d-node" style="--n:4"><rect class="d-accent" x="270" y="36" width="190" height="248" rx="10"/><text class="d-t" x="286" y="68">Relay API</text><text class="d-s" x="286" y="90">Node.js · Express</text><text class="d-s" x="286" y="108">Socket.IO real-time hub</text><text class="d-s" x="286" y="136">JWT · multi-tenant</text><text class="d-s" x="286" y="154">Role &amp; district hierarchy</text><text class="d-s" x="286" y="172">with feature grants</text><text class="d-s" x="286" y="200">PM2 cluster · audit logs</text><text class="d-s" x="286" y="218">Reports · CSV / PDF export</text><text class="d-s" x="286" y="246">Map intel · CDR analysis</text></g>
 
         <text class="d-h" x="520" y="24">DATA &amp; INTELLIGENCE</text>
-        <rect class="d-box" x="520" y="36" width="180" height="72" rx="10"/>
-        <text class="d-t" x="536" y="64">MongoDB replica set</text><text class="d-s" x="536" y="84">Per-tenant DB · optional on-prem</text>
-        <rect class="d-accent" x="520" y="124" width="180" height="72" rx="10"/>
-        <text class="d-t" x="536" y="152">Spear Assistant</text><text class="d-s" x="536" y="172">Specialist agents · RAG · approvals</text>
-        <rect class="d-box" x="520" y="212" width="180" height="72" rx="10"/>
-        <text class="d-t" x="536" y="240">Observability</text><text class="d-s" x="536" y="260">Metrics · logs · LLM traces</text>
+<g class="d-node" style="--n:5"><rect class="d-box" x="520" y="36" width="180" height="72" rx="10"/><text class="d-t" x="536" y="64">MongoDB replica set</text><text class="d-s" x="536" y="84">Per-tenant DB · optional on-prem</text></g>
+<g class="d-node" style="--n:6"><rect class="d-accent" x="520" y="124" width="180" height="72" rx="10"/><text class="d-t" x="536" y="152">Spear Assistant</text><text class="d-s" x="536" y="172">Specialist agents · RAG · approvals</text></g>
+<g class="d-node" style="--n:7"><rect class="d-box" x="520" y="212" width="180" height="72" rx="10"/><text class="d-t" x="536" y="240">Observability</text><text class="d-s" x="536" y="260">Metrics · logs · LLM traces</text></g>
 
         <path class="d-line" d="M210 72 H270 M210 160 H270 M210 248 H270"/>
         <path class="d-line" d="M460 72 H520 M460 160 H520 M460 248 H520"/>
@@ -545,6 +574,7 @@
   </div>
 </noscript>
 
+<script>document.documentElement.classList.add("js")</script>
 <script src="data.js"></script>
 <script src="blog-content.js"></script>
 <script src="app.js"></script>

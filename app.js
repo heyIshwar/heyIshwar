@@ -85,3 +85,55 @@ function route() {
 renderHomeWriting();
 window.addEventListener("hashchange", route);
 route();
+
+// ---------- motion ----------
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Split hero headline into words for a staggered entrance.
+const h1 = document.querySelector(".hero h1");
+if (h1 && !reduceMotion) {
+  h1.innerHTML = h1.textContent
+    .trim()
+    .split(/\s+/)
+    .map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`)
+    .join(" ");
+}
+
+const io = "IntersectionObserver" in window && !reduceMotion
+  ? new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          setTimeout(() => e.target.classList.add("done"), 1300);
+          io.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    )
+  : null;
+
+function initReveal() {
+  const targets = document.querySelectorAll(
+    ".block > h2, .feature, .pillar, .job, .edu, .repo, .post-row, .more-link, .page .lead, .doc > h2, .doc > p, .doc > ul, .doc > .tags, .note, figure.diagram, .list-h, .post-cover, .prose > *"
+  );
+  targets.forEach((el) => {
+    if (el.dataset.rv) return;
+    el.dataset.rv = "1";
+    if (!io) return;
+    if (!el.matches("figure.diagram")) el.classList.add("reveal");
+    const idx = [...el.parentElement.children].indexOf(el);
+    el.style.setProperty("--d", Math.min(idx, 5) * 70 + "ms");
+    io.observe(el);
+  });
+}
+
+// Scroll progress bar.
+const bar = document.getElementById("progress");
+function onScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  bar.style.transform = `scaleX(${max > 0 ? Math.min(scrollY / max, 1) : 0})`;
+}
+addEventListener("scroll", onScroll, { passive: true });
+
+initReveal();
+window.addEventListener("hashchange", () => requestAnimationFrame(initReveal));
