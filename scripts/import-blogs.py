@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pull blog HTML + images from ishwar.dev into blog-content.jsx."""
+"""Pull blog HTML + images from ishwar.dev into blog-content.js."""
 
 import html
 import json
@@ -71,7 +71,7 @@ def main() -> None:
             continue
         blog_entries[f] = rewrite_content(p["content"]["rendered"])
 
-    out = ROOT / "blog-content.jsx"
+    out = ROOT / "blog-content.js"
     lines = [
         "// Auto-generated blog HTML from ishwar.dev — run scripts/import-blogs.py to refresh",
         "",
