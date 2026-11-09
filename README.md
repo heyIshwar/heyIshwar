@@ -2,10 +2,10 @@
 
 # Ishwar Sarade
 
-**Full-stack & AI engineer — Mumbai.**<br/>
+**Full-stack & AI engineer — Hyderabad.**<br/>
 Building web apps, RAG pipelines, MCP tooling, and open source.
 
-**● Open to work** — full-stack & AI engineering roles, remote or Mumbai.
+**● Open to work** — full-stack & AI engineering roles, remote or Hyderabad.
 
 [![ishwar.dev](https://img.shields.io/badge/ishwar.dev-0a0a0a?style=for-the-badge&logo=google-chrome&logoColor=a3e635)](https://ishwar.dev)
 [![X](https://img.shields.io/badge/@IshwarSarade-0a0a0a?style=for-the-badge&logo=x&logoColor=a3e635)](https://x.com/IshwarSarade)
@@ -37,7 +37,7 @@ Building web apps, RAG pipelines, MCP tooling, and open source.
 <!-- Posts: keep in sync with POSTS in shared.jsx — newest first, max 5 -->
 ### ✍️ Latest writing
 
-- 🇮🇳 **[Inference Meets Cyber Laws in India](https://ishwar.dev/#/blog/inference-cyber-laws-india.md)** — DPDP, CERT-In, IT Rules, and why frontier models still miss Mumbai · *Jul 2026*
+- 🇮🇳 **[Inference Meets Cyber Laws in India](https://ishwar.dev/#/blog/inference-cyber-laws-india.md)** — DPDP, CERT-In, IT Rules, and why frontier models still miss Hyderabad · *Jul 2026*
 - 🐱 **[maccy-pet: Desktop Pet That Holds Your Tasks](https://ishwar.dev/#/blog/maccy-pet.md)** — always-on-top Neko for macOS · *Jul 2026*
 - 🗂️ **[Desktop Zero: macOS LaunchAgent File Sorting](https://ishwar.dev/#/blog/folder-sort.md)** — no Hazel, no AI, just launchd · *Jul 2026*
 - 🔍 **[Introducing Sniffr](https://ishwar.dev/#/blog/sniffr.md)** — sniff leaked keys, weak perms, host posture · *Jun 2026*
